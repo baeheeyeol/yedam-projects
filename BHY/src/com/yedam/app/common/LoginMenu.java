@@ -54,7 +54,7 @@ public class LoginMenu {
 	protected void showInputError() {
 		System.out.println("메뉴에서 입력해주시기 바랍니다.");
 	}
-
+//1.
 	protected void login() {
 		// 아이디와 비밀번호 입력
 		Member inputInfo = memberInputAll();
@@ -89,20 +89,20 @@ public class LoginMenu {
 	}
 
 	protected String inputId() {
-		System.out.println("ID>");
+		System.out.printf("ID>");
 		return sc.nextLine();
 	}
 
 	protected String inputPassword() {
-		System.out.println("Password>");
+		System.out.printf("Password>");
 		return sc.nextLine();
 	}
 
 	protected Member memberInputAll() {
 		Member temp = new Member();
-		System.out.println("ID>");
+		System.out.printf("ID>");
 		temp.setMemberId(sc.nextLine());
-		System.out.println("PASSWORD>");
+		System.out.printf("PASSWORD>");
 		temp.setMemberPwd(sc.nextLine());
 		return temp;
 	}

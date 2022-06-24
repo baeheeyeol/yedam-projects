@@ -24,7 +24,7 @@ public class BoardDAO extends DAO {
 	public void insert(Board board) {
 		try {
 			connect();
-			String sql = "INSERT INTO BOARD VALUES(board_seq.nextval,?,?)";
+			String sql = "INSERT INTO BOARD (board_num,board_title,member_id) VALUES(board_seq.nextval,?,?)";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, board.getBoard_title());
 			pstmt.setString(2, board.getMember_id());
@@ -43,6 +43,7 @@ public class BoardDAO extends DAO {
 	}
 
 	public int seq() {
+
 		int boardNum = 0;
 		try {
 			connect();
@@ -83,8 +84,13 @@ public class BoardDAO extends DAO {
 
 	// 삭제
 	public void delete(int board_num) {
+
 		try {
 			connect();
+			String sql1 = "DELETE FROM BOARD_CONTENT WHERE BOARD_NUM =?";
+			pstmt = conn.prepareStatement(sql1);
+			pstmt.setInt(1, board_num);
+			pstmt.executeUpdate();
 			String sql = "DELETE FROM BOARD WHERE BOARD_NUM = ?";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, board_num);
@@ -102,12 +108,13 @@ public class BoardDAO extends DAO {
 	}
 
 	// 수정 - 내용
-	public void updateContent(Board board) {
+
+	public void updateContent(String content, Board board) {
 		try {
 			connect();
-			String sql = "UPDATE FROM BOARD SET Board_content = ? where BOARD_NUM = ?";
+			String sql = "UPDATE BOARD_content SET Board_content = ? where BOARD_NUM = ?";
 			pstmt = conn.prepareStatement(sql);
-			pstmt.setString(1, board.getBoard_content());
+			pstmt.setString(1, content);
 			pstmt.setInt(2, board.getBoard_num());
 			int result = pstmt.executeUpdate();
 			if (result > 0) {
@@ -123,12 +130,13 @@ public class BoardDAO extends DAO {
 	}
 
 	// 수정 - 제목
-	public void updateTitle(Board board) {
+	public void updateTitle(String title, Board board) {
+
 		try {
 			connect();
-			String sql = "UPDATE FROM BOARD SET BOARD_TITLE = ? WHERE BOARD_NUM = ?";
+			String sql = "UPDATE BOARD SET BOARD_TITLE = ? WHERE BOARD_NUM = ?";
 			pstmt = conn.prepareStatement(sql);
-			pstmt.setString(1, board.getBoard_title());
+			pstmt.setString(1, title);
 			pstmt.setInt(2, board.getBoard_num());
 			int result = pstmt.executeUpdate();
 			if (result > 0) {
@@ -143,27 +151,185 @@ public class BoardDAO extends DAO {
 		}
 	}
 
-	// 번호로 제목 선택
-	public String selectTitle(int boardId) {
-		String boardTitle = null;
+	// 게시판 모든 번호 조회
+	public List<Integer> selectBoardNum() {
+		List<Integer> list = new ArrayList<>();
 		try {
 			connect();
-			String sql = "SELECT BOARD_TITLE FORM BOARD WHERE BOARD_NUM =?";
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, boardId);
-			if (rs.next()) {
-				boardTitle = rs.getString("BOARD_TITLE");
+			String sql = "SELECT BOARD_NUM FROM BOARD";
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(sql);
+			while (rs.next()) {
+				list.add(rs.getInt("BOARD_NUM"));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
 			disconnect();
 		}
-		return boardTitle;
+		return list;
+	}
+
+	// 게시판 내용 조회
+	public Board selectContent(int boardNum) {
+		Board board = null;
+		;
+		try {
+			connect();
+			String sql = "SELECT * FROM BOARD JOIN BOARD_CONTENT USING(BOARD_NUM) WHERE BOARD_NUM = '" + boardNum + "'";
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(sql);
+			if (rs.next()) {
+				board = new Board();
+				board.setBoard_content(rs.getString("board_content"));
+				board.setBoard_num(rs.getInt("board_num"));
+				board.setBoard_title(rs.getString("board_title"));
+				board.setMember_id(rs.getString("member_id"));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			disconnect();
+		}
+		return board;
+	}
+
+	// 게시판 모든 제목 조회
+	public List<String> selectBoardTitle() {
+		List<String> list = new ArrayList<>();
+		try {
+			connect();
+			String sql = "SELECT BOARD_Title FROM BOARD";
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(sql);
+			while (rs.next()) {
+				list.add(rs.getString("BOARD_Title"));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			disconnect();
+		}
+		return list;
+	}
+
+	// 댓글여부 갱신
+	public void updateComent(int boardNum) {
+		try {
+			connect();
+			String sql = "UPDATE BOARD SET COMMENTS = 1 WHERE BOARD_NUM = ?";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, boardNum);
+			pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			disconnect();
+		}
+	}
+
+	public int selectComent(int boardNum) {
+		int num = 0;
+		try {
+			connect();
+			String sql = "SELECT COMMENTS FROM BOARD WHERE BOARD_NUM = " + boardNum;
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(sql);
+			if (rs.next()) {
+				num = rs.getInt("COMMENTS");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			disconnect();
+		}
+		return num;
+	}
+
+	// 게시판 번호로 하나선택
+	public Board selectOne(int boardNum) {
+		Board board = new Board();
+		try {
+			connect();
+			String sql = "SELECT * FROM BOARD WHERE BOARD_NUM = " + boardNum;
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(sql);
+			if (rs.next()) {
+				board.setBoard_num(rs.getInt("board_num"));
+				board.setBoard_title(rs.getString("board_title"));
+				board.setMember_id(rs.getString("member_id"));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			disconnect();
+		}
+		return board;
+	}
+
+	// 게시판 제목으로 하나선택
+	public Board selectOne(String boardTitle) {
+		Board board = new Board();
+		try {
+			connect();
+			String sql = "SELECT * FROM BOARD WHERE BOARD_TITLE = '" + boardTitle + "'";
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(sql);
+			if (rs.next()) {
+				board.setBoard_num(rs.getInt("board_num"));
+				board.setBoard_title(rs.getString("board_title"));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			disconnect();
+		}
+		return board;
+	}
+
+	// 모든 제목 조회
+	public List<String> selectAllTitle() {
+		List<String> list = new ArrayList<>();
+		try {
+			connect();
+			String sql = "SELECT BOARD_TITLE FROM BOARD";
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(sql);
+			while (rs.next()) {
+				list.add(rs.getString("BOARD_TITLE"));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			disconnect();
+		}
+		return list;
+	}
+
+	public List<Board> selectAll(String memberId) {
+		List<Board> list = new ArrayList<>();
+		try {
+			connect();
+			String sql = "SELECT * FROM BOARD WHERE MEMBER_ID = '" + memberId + "'";
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(sql);
+			while (rs.next()) {
+				Board Board = new Board();
+				Board.setBoard_num(rs.getInt("board_num"));
+				Board.setBoard_title(rs.getString("board_title"));
+				list.add(Board);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			disconnect();
+		}
+		return list;
 	}
 
 	// 전체
 	public List<Board> selelctAll() {
+
 		List<Board> list = new ArrayList<>();
 		try {
 			connect();

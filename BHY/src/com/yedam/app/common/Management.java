@@ -30,7 +30,7 @@ public class Management {
 				boardWrtie(member);
 			} else if (menuNo == 2) {
 				// 선택
-				// boardChoice();
+				 new BoardChoiceManagement(member);
 			} else if (menuNo == 9) {
 				// 프로그램 종료
 				exit();
