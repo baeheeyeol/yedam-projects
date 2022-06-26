@@ -26,8 +26,8 @@ public class BoardDAO extends DAO {
 			connect();
 			String sql = "INSERT INTO BOARD (board_num,board_title,member_id) VALUES(board_seq.nextval,?,?)";
 			pstmt = conn.prepareStatement(sql);
-			pstmt.setString(1, board.getBoard_title());
-			pstmt.setString(2, board.getMember_id());
+			pstmt.setString(1, board.getBoardTitle());
+			pstmt.setString(2, board.getMemberId());
 
 			int result = pstmt.executeUpdate();
 			if (result > 0) {
@@ -64,10 +64,11 @@ public class BoardDAO extends DAO {
 	public void insertcontent(Board board) {
 		try {
 			connect();
-			String sql = "INSERT INTO BOARD_CONTENT VALUES(?,?)";
+			String sql = "INSERT INTO BOARD_CONTENT VALUES(?,?,?)";
 			pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, board.getBoard_num());
-			pstmt.setString(2, board.getBoard_content());
+			pstmt.setInt(1, board.getBoardNum());
+			pstmt.setString(2, board.getBoardContent());
+			pstmt.setInt(3, board.getBoardInvisible());
 
 			int result = pstmt.executeUpdate();
 			if (result > 0) {
@@ -115,7 +116,7 @@ public class BoardDAO extends DAO {
 			String sql = "UPDATE BOARD_content SET Board_content = ? where BOARD_NUM = ?";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, content);
-			pstmt.setInt(2, board.getBoard_num());
+			pstmt.setInt(2, board.getBoardNum());
 			int result = pstmt.executeUpdate();
 			if (result > 0) {
 				System.out.println("삭제되었습니다.");
@@ -137,7 +138,7 @@ public class BoardDAO extends DAO {
 			String sql = "UPDATE BOARD SET BOARD_TITLE = ? WHERE BOARD_NUM = ?";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, title);
-			pstmt.setInt(2, board.getBoard_num());
+			pstmt.setInt(2, board.getBoardNum());
 			int result = pstmt.executeUpdate();
 			if (result > 0) {
 				System.out.println("삭제되었습니다.");
@@ -152,7 +153,7 @@ public class BoardDAO extends DAO {
 	}
 
 	// 게시판 모든 번호 조회
-	public List<Integer> selectBoardNum() {
+	public List<Integer> selectAllBoardNum() {
 		List<Integer> list = new ArrayList<>();
 		try {
 			connect();
@@ -181,10 +182,10 @@ public class BoardDAO extends DAO {
 			rs = stmt.executeQuery(sql);
 			if (rs.next()) {
 				board = new Board();
-				board.setBoard_content(rs.getString("board_content"));
-				board.setBoard_num(rs.getInt("board_num"));
-				board.setBoard_title(rs.getString("board_title"));
-				board.setMember_id(rs.getString("member_id"));
+				board.setBoardContent(rs.getString("board_content"));
+				board.setBoardNum(rs.getInt("board_num"));
+				board.setBoardTitle(rs.getString("board_title"));
+				board.setMemberId(rs.getString("member_id"));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -195,7 +196,7 @@ public class BoardDAO extends DAO {
 	}
 
 	// 게시판 모든 제목 조회
-	public List<String> selectBoardTitle() {
+	public List<String> selectAllBoardTitle() {
 		List<String> list = new ArrayList<>();
 		try {
 			connect();
@@ -213,38 +214,6 @@ public class BoardDAO extends DAO {
 		return list;
 	}
 
-	// 댓글여부 갱신
-	public void updateComent(int boardNum) {
-		try {
-			connect();
-			String sql = "UPDATE BOARD SET COMMENTS = 1 WHERE BOARD_NUM = ?";
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, boardNum);
-			pstmt.executeUpdate();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			disconnect();
-		}
-	}
-
-	public int selectComent(int boardNum) {
-		int num = 0;
-		try {
-			connect();
-			String sql = "SELECT COMMENTS FROM BOARD WHERE BOARD_NUM = " + boardNum;
-			stmt = conn.createStatement();
-			rs = stmt.executeQuery(sql);
-			if (rs.next()) {
-				num = rs.getInt("COMMENTS");
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			disconnect();
-		}
-		return num;
-	}
 
 	// 게시판 번호로 하나선택
 	public Board selectOne(int boardNum) {
@@ -255,9 +224,9 @@ public class BoardDAO extends DAO {
 			stmt = conn.createStatement();
 			rs = stmt.executeQuery(sql);
 			if (rs.next()) {
-				board.setBoard_num(rs.getInt("board_num"));
-				board.setBoard_title(rs.getString("board_title"));
-				board.setMember_id(rs.getString("member_id"));
+				board.setBoardNum(rs.getInt("board_num"));
+				board.setBoardTitle(rs.getString("board_title"));
+				board.setMemberId(rs.getString("member_id"));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -276,8 +245,8 @@ public class BoardDAO extends DAO {
 			stmt = conn.createStatement();
 			rs = stmt.executeQuery(sql);
 			if (rs.next()) {
-				board.setBoard_num(rs.getInt("board_num"));
-				board.setBoard_title(rs.getString("board_title"));
+				board.setBoardNum(rs.getInt("board_num"));
+				board.setBoardTitle(rs.getString("board_title"));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -315,8 +284,8 @@ public class BoardDAO extends DAO {
 			rs = stmt.executeQuery(sql);
 			while (rs.next()) {
 				Board Board = new Board();
-				Board.setBoard_num(rs.getInt("board_num"));
-				Board.setBoard_title(rs.getString("board_title"));
+				Board.setBoardNum(rs.getInt("board_num"));
+				Board.setBoardTitle(rs.getString("board_title"));
 				list.add(Board);
 			}
 		} catch (SQLException e) {
@@ -338,9 +307,11 @@ public class BoardDAO extends DAO {
 			rs = stmt.executeQuery(sql);
 			while (rs.next()) {
 				Board Board = new Board();
-				Board.setBoard_num(rs.getInt("board_num"));
-				Board.setBoard_title(rs.getString("board_title"));
-				Board.setBoard_content(rs.getString("board_content"));
+				Board.setBoardNum(rs.getInt("board_num"));
+				Board.setBoardTitle(rs.getString("board_title"));
+				Board.setBoardContent(rs.getString("board_content"));
+				Board.setMemberId(rs.getString("member_id"));
+				Board.setBoardInvisible(rs.getInt("board_invisible"));
 				list.add(Board);
 			}
 		} catch (SQLException e) {

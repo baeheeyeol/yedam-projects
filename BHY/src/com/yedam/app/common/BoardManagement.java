@@ -5,28 +5,29 @@ import java.util.Scanner;
 
 import com.yedam.app.board.Board;
 import com.yedam.app.board.BoardDAO;
-import com.yedam.app.board.Coment;
-import com.yedam.app.board.ComentDAO;
+import com.yedam.app.board.Comment;
+import com.yedam.app.board.CommentDAO;
+import com.yedam.app.member.Member;
 
-public class BoardUpdate {
+public class BoardManagement {
 
-	ComentDAO cDAO = ComentDAO.getInstance();
+	CommentDAO cDAO = CommentDAO.getInstance();
 	BoardDAO bDAO = BoardDAO.getInstance();
 	Scanner sc = new Scanner(System.in);
 
-	public BoardUpdate(Board board, String memberId) {
-		String Id = memberId;
+	public BoardManagement(Board board, Member member) {
+		
 		while (true) {
-
-			menuPrint(board, Id);
+			selectedBoard(board);
+			menuPrint(board, member.getMemberId());
 
 			int menuNo = menuSelect();
 			if (menuNo == 1) {
 				// 읽기
-				Read(board, memberId);
+				Read(board, member.getMemberId());
 			} else if (menuNo == 2) {
 				// 수정
-				Update(board, memberId);
+				Update(board, member.getMemberId());
 			} else if (menuNo == 3) {
 				// 삭제
 				Delete(board);
@@ -41,15 +42,19 @@ public class BoardUpdate {
 		}
 	}
 
+	private void selectedBoard(Board board) {
+		System.out.println(board.getBoardNum() + ". " + board.getBoardTitle());
+	}
+
 	private void Delete(Board board) {
 		while (true) {
-			Board list = bDAO.selectOne(board.getBoard_num());
-			System.out.println("--" + list.getBoard_num() + ". " + list.getBoard_title() + "--");
+			Board list = bDAO.selectOne(board.getBoardNum());
+			System.out.println("--" + list.getBoardNum() + ". " + list.getBoardTitle() + "--");
 			System.out.println("해당 게시글을 삭제하시겠습니까");
 			System.out.println("1.삭제 2.뒤로가기");
 			int menuNo = menuSelect();
 			if (menuNo == 1) {
-				bDAO.delete(board.getBoard_num());
+				bDAO.delete(board.getBoardNum());
 				break;
 			} else if (menuNo == 2) {
 				break;
@@ -81,18 +86,17 @@ public class BoardUpdate {
 
 	// 읽기
 	private void Read(Board board, String memberId) {
-		Board temp = bDAO.selectContent(board.getBoard_num());
-		System.out.println(temp.getBoard_num() + ". " + temp.getBoard_title() + " : " + temp.getBoard_content() + " ");
-		String str = "";
-		List<Coment> list = cDAO.selectAll(board.getBoard_num());
-		for (Coment coment : list) {
-			if (coment.getComentcomentNum() == 0) {
-				str += coment.getComentNum() + ". " + coment.getComentContent() + " /" + coment.getMemberId();
-				System.out.println(str);
+		Board temp = bDAO.selectContent(board.getBoardNum());
+		System.out.println(temp.getBoardNum() + ". " + temp.getBoardTitle() + " : " + temp.getBoardContent() + " ");
+
+		List<Comment> list = cDAO.selectAll(board.getBoardNum());
+		System.out.println("댓글");
+		for (Comment comment : list) {
+			if (comment.getCommentInvisible() == 1) {
+				System.out.println("삭제된 댓글입니다.");
 			} else {
-				str += "->" + coment.getComentcomentNum() + ". " + coment.getComentContent() + "/"
-						+ coment.getMemberId();
-				System.out.println(str);
+				System.out.println(comment.getCommentNum() + "." + comment.getCommentContent() + " /id : "
+						+ comment.getMemberId());
 			}
 		}
 		new ComentManagement(memberId, board);
@@ -100,8 +104,8 @@ public class BoardUpdate {
 
 	protected void menuPrint(Board board, String memberId) {
 		String sql = "1.읽기";
-		Board temp = bDAO.selectOne(board.getBoard_num());
-		if (temp.getMember_id().equals(memberId)) {
+		Board temp = bDAO.selectOne(board.getBoardNum());
+		if (temp.getMemberId().equals(memberId)) {
 			sql += " 2.수정 3.삭제";
 		}
 		sql += " 9.뒤로가기";

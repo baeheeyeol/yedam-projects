@@ -7,13 +7,16 @@ import com.yedam.app.board.Board;
 import com.yedam.app.board.BoardDAO;
 import com.yedam.app.board.Comment;
 import com.yedam.app.board.CommentDAO;
+import com.yedam.app.board.NoticeBoard;
+import com.yedam.app.board.NoticeComment;
+import com.yedam.app.board.NoticeCommentDAO;
 
-public class ComentManagement {
+public class NoticeCommentManagement {
 	Scanner sc = new Scanner(System.in);
 	BoardDAO bDAO = BoardDAO.getInstance();
-	CommentDAO cDAO = CommentDAO.getInstance();
+	NoticeCommentDAO ntDAO = NoticeCommentDAO.getInstance();
 
-	public ComentManagement(String memberId, Board board) {
+	public NoticeCommentManagement(String memberId, NoticeBoard noticeboard) {
 
 		while (true) {
 			menuPrint();
@@ -21,13 +24,13 @@ public class ComentManagement {
 			int menuNo = menuSelect();
 			if (menuNo == 1) {
 				// 입력
-				insertComent(memberId, board.getBoardNum());
+				insertComent(memberId, noticeboard.getBoardNum());
 			} else if (menuNo == 2) {
 				// 수정
-				updateComent(memberId, board.getBoardNum());
+				updateComent(memberId, noticeboard.getBoardNum());
 			} else if (menuNo == 3) {
 				// 삭제
-				deleteComent(memberId, board.getBoardNum());
+				deleteComent(memberId, noticeboard.getBoardNum());
 			} else if (menuNo == 9) {
 				exit();
 				break;
@@ -43,18 +46,18 @@ public class ComentManagement {
 		if (checkComentNum(commentNum)) {
 			if (checkMemberId(memberId)) {
 				if (checkComentParent(commentNum)) {
-					cDAO.update(commentNum);
+					ntDAO.update(commentNum);
 				} else {
-					cDAO.delete(commentNum);
+					ntDAO.delete(commentNum);
 				}
 			}
 		}
 	}
 
 	boolean checkComentParent(int commentNum) {
-		List<Comment> list = cDAO.selectAll();
-		for (Comment comment : list) {
-			if (commentNum == comment.getCommentNumParent()) {
+		List<NoticeComment> list = ntDAO.selectAll();
+		for (NoticeComment noticeComment : list) {
+			if (commentNum == noticeComment.getCommentNumParent()) {
 				return true;
 			}
 		}
@@ -65,7 +68,7 @@ public class ComentManagement {
 		int commentNum = selectComment();
 		if (checkComentNum(commentNum)) {
 			if (checkMemberId(memberId)) {
-				cDAO.update(commentNum, inputContent());
+				ntDAO.update(commentNum, inputContent());
 			}
 		}
 	}
@@ -75,12 +78,12 @@ public class ComentManagement {
 		int num = choiceCommentWay();
 		if (num == 1) {
 			// 댓글 작성
-			cDAO.insert(boardNum, memberId, inputContent());
+			ntDAO.insert(boardNum, memberId, inputContent());
 		} else if (num == 2) {
 			// 대댓글 작성
 			int commentNum = selectComment();
 			if (checkComentNum(commentNum)) {
-				cDAO.insertToInsert(boardNum, memberId, inputContent(), commentNum);
+				ntDAO.insertToInsert(boardNum, memberId, inputContent(), commentNum);
 			}
 		}
 	}
@@ -103,9 +106,9 @@ public class ComentManagement {
 
 	// 본인 댓글 여부 확인
 	boolean checkMemberId(String memberId) {
-		List<Comment> list = cDAO.selectAll();
-		for (Comment comment : list) {
-			if (comment.getMemberId().equals(memberId)) {
+		List<NoticeComment> list = ntDAO.selectAll();
+		for (NoticeComment noticeComment : list) {
+			if (noticeComment.getMemberId().equals(memberId)) {
 				return true;
 			}
 		}
@@ -115,9 +118,9 @@ public class ComentManagement {
 
 	// 댓글 존재 확인
 	boolean checkComentNum(int commentNum) {
-		List<Comment> list = cDAO.selectAll();
-		for (Comment comment : list) {
-			if (comment.getCommentNum() == commentNum) {
+		List<NoticeComment> list = ntDAO.selectAll();
+		for (NoticeComment noticeComment : list) {
+			if (noticeComment.getCommentNum() == commentNum) {
 				return true;
 			}
 		}
@@ -131,7 +134,7 @@ public class ComentManagement {
 	}
 
 	void ComentUpdate(String memberId, int boardNum) {
-		cDAO.insert(boardNum, memberId, insertContent());
+		ntDAO.insert(boardNum, memberId, insertContent());
 	}
 
 	protected String insertContent() {

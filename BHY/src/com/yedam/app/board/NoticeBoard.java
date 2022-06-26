@@ -2,26 +2,39 @@ package com.yedam.app.board;
 
 public class NoticeBoard{
 
-	private int ntboard_num;
-	private String ntboard_title;
-	private String ntboard_content;
-	public int getNtboard_num() {
-		return ntboard_num;
+	private int boardNum;
+	private String boardTitle;
+	private String boardContent;
+	private String memberId;
+	private int boardInvisible;
+	public int getBoardInvisible() {
+		return boardInvisible;
 	}
-	public void setNtboard_num(int ntboard_num) {
-		this.ntboard_num = ntboard_num;
+	public void setBoardInvisible(int boardInvisible) {
+		this.boardInvisible = boardInvisible;
 	}
-	public String getNtboard_title() {
-		return ntboard_title;
+	public int getBoardNum() {
+		return boardNum;
 	}
-	public void setNtboard_title(String ntboard_title) {
-		this.ntboard_title = ntboard_title;
+	public void setBoardNum(int boardNum) {
+		this.boardNum = boardNum;
 	}
-	public String getNtboard_content() {
-		return ntboard_content;
+	public String getBoardTitle() {
+		return boardTitle;
 	}
-	public void setNtboard_content(String ntboard_content) {
-		this.ntboard_content = ntboard_content;
+	public void setBoardTitle(String boardTitle) {
+		this.boardTitle = boardTitle;
 	}
-	
+	public String getBoardContent() {
+		return boardContent;
+	}
+	public void setBoardContent(String boardContent) {
+		this.boardContent = boardContent;
+	}
+	public String getMemberId() {
+		return memberId;
+	}
+	public void setMemberId(String memberId) {
+		this.memberId = memberId;
+	}
 }

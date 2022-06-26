@@ -66,10 +66,11 @@ public class MemberDAO extends DAO {
 	public void insert(Member member) {
 		try {
 			connect();
-			String sql = "INSERT INTO MEMBERS(MEMBER_ID,MEMBER_PWD) VALUES(?,?)";
+			String sql = "INSERT INTO MEMBERS VALUES(?,?,?)";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, member.getMemberId());
 			pstmt.setString(2, member.getMemberPwd());
+			pstmt.setInt(3, member.getRole());
 			int result = pstmt.executeUpdate();
 			if (result > 0) {
 				System.out.println("회원가입성공");
@@ -88,12 +89,13 @@ public class MemberDAO extends DAO {
 		Member mb = null;
 		try {
 			connect();
-			String sql = "SELECT member_id,member_role FROM MEMBERS WHERE MEMBER_ID = ?";
+			String sql = "SELECT * FROM MEMBERS WHERE MEMBER_ID = ?";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, id);
 			rs = pstmt.executeQuery();
 			if (rs.next()) {
 				mb = new Member();
+				mb.setMemberPwd(rs.getString("member_pwd"));
 				mb.setMemberId(rs.getString("member_id"));
 				mb.setRole(rs.getInt("member_role"));
 			}

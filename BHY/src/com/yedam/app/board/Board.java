@@ -2,40 +2,48 @@ package com.yedam.app.board;
 
 public class Board {
 
-	private int board_num;
-	private String board_title;
-	private String board_content;
-	private String member_id;
-
-	public String getMember_id() {
-		return member_id;
+	private int boardNum;
+	private String boardTitle;
+	private String boardContent;
+	private String memberId;
+	private int boardInvisible;// 0이면 아이디가 보인다. 1이면 다른유저는 아이디가 보이지 않는다.
+	private int rowNum;
+	public int getRowNum() {
+		return rowNum;
+	}
+	public void setRowNum(int rowNum) {
+		this.rowNum = rowNum;
+	}
+	public int getBoardInvisible() {
+		return boardInvisible;
+	}
+	public void setBoardInvisible(int boardInvisible) {
+		this.boardInvisible = boardInvisible;
+	}
+	public int getBoardNum() {
+		return boardNum;
+	}
+	public void setBoardNum(int boardNum) {
+		this.boardNum = boardNum;
+	}
+	public String getBoardTitle() {
+		return boardTitle;
+	}
+	public void setBoardTitle(String boardTitle) {
+		this.boardTitle = boardTitle;
+	}
+	public String getBoardContent() {
+		return boardContent;
+	}
+	public void setBoardContent(String boardContent) {
+		this.boardContent = boardContent;
+	}
+	public String getMemberId() {
+		return memberId;
+	}
+	public void setMemberId(String memberId) {
+		this.memberId = memberId;
 	}
 
-	public void setMember_id(String member_id) {
-		this.member_id = member_id;
-	}
 
-	public int getBoard_num() {
-		return board_num;
-	}
-
-	public void setBoard_num(int board_num) {
-		this.board_num = board_num;
-	}
-
-	public String getBoard_title() {
-		return board_title;
-	}
-
-	public void setBoard_title(String board_title) {
-		this.board_title = board_title;
-	}
-
-	public String getBoard_content() {
-		return board_content;
-	}
-
-	public void setBoard_content(String board_content) {
-		this.board_content = board_content;
-	}
 }

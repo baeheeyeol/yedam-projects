@@ -50,6 +50,8 @@ public class DAO {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		properties.setProperty(resource, resource);
 		jdbc_driver = properties.getProperty("driver");
 		oracle_url = properties.getProperty("url");
 		connectedId = properties.getProperty("id");
