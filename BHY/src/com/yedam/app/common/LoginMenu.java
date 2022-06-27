@@ -1,8 +1,8 @@
 package com.yedam.app.common;
 
 import java.util.List;
-
 import java.util.Scanner;
+
 import com.yedam.app.member.Member;
 import com.yedam.app.member.MemberDAO;
 
@@ -13,10 +13,12 @@ public class LoginMenu {
 	protected String memberId;
 	protected int role;
 	protected boolean nonMember;
-protected String nonMemberId;
-	public LoginMenu() {
-		this.nonMember =false;
+	protected String nonMemberId;
+
+	public LoginMenu() throws InterruptedException {
+		this.nonMember = false;
 		while (true) {
+			clear();
 			menuPrint();
 			int menuNo = menuSelect();
 			if (menuNo == 1) {
@@ -27,8 +29,7 @@ protected String nonMemberId;
 				loginNonMember();
 			} else if (menuNo == 9) {
 				// 프로그램 종료
-				if(nonMember) 
-				{
+				if (nonMember) {
 					deleteNonMember();
 				}
 				exit();
@@ -46,12 +47,13 @@ protected String nonMemberId;
 		System.out.print("번호>");
 	}
 
-	protected int menuSelect() {
+	protected int menuSelect() throws InterruptedException {
 		int menu = 0;
 		try {
 			menu = Integer.parseInt(sc.nextLine());
 		} catch (NumberFormatException e) {
 			System.out.println("숫자를 입력해주시기 바랍니다.");
+			Thread.sleep(1000);
 		}
 		return menu;
 	}
@@ -60,14 +62,15 @@ protected String nonMemberId;
 		System.out.println("프로그램을 종료합니다.");
 	}
 
-	protected void showInputError() {
+	protected void showInputError() throws InterruptedException {
 		System.out.println("메뉴에서 입력해주시기 바랍니다.");
+		Thread.sleep(1000);
 	}
 
-	void loginNonMember() {
+	void loginNonMember() throws InterruptedException {
 		Member mb = new Member();
-		int num = (int) (Math.random() * 100);
-		String nonMemberId = "guest"+num ;
+		int num = (int) (Math.random() * 1001);
+		String nonMemberId = "guest" + num;
 		String nonMemberPwd = "0000";
 		mb.setMemberId(nonMemberId);
 		mb.setMemberPwd(nonMemberPwd);
@@ -75,36 +78,32 @@ protected String nonMemberId;
 		mDAO.insert(mb);
 		new Management().ManagementRun(mb);
 		this.nonMember = true;
-		this.nonMemberId =mb.getMemberId();
+		this.nonMemberId = mb.getMemberId();
 	}
-
-	void deleteNonMember() 
-	{
+	void deleteNonMember() {
 		mDAO.delete(nonMemberId);
 	}
-//1.
-	protected void login() {
-		// 아이디와 비밀번호 입력
+
+	protected void login() throws InterruptedException {
+
 		Member inputInfo = memberInputAll();
-		// 로그인 시도
 		if (MemberDAO.getInstance().selectOne(inputInfo) == null) {
-			// 실패할 경우 그대로 메소드 종료
 			return;
 		}
-		// 성공할 경우 프로그램을 실행
 		inputInfo = mDAO.selectOne(inputInfo.getMemberId());
 		new Management().ManagementRun(inputInfo);
 		;
 	}
 
 	// 회원가입
-	protected void signup() {
+	protected void signup() throws InterruptedException {
 		String id = inputId();
 		List<String> list = mDAO.selectAllId();
 		boolean idCheck = false;
 		for (int i = 0; i < list.size(); i++) {
 			if (id.equals(list.get(i))) {
 				System.out.println("등록된 id입니다.");
+				Thread.sleep(1000);
 				idCheck = true;
 				break;
 			}
@@ -118,18 +117,20 @@ protected String nonMemberId;
 		}
 	}
 
-	protected String inputId() {
+	protected String inputId() throws InterruptedException {
 		String Id;
 		while (true) {
 			System.out.printf("ID>");
 			Id = sc.nextLine();
 			if (Id.length() >= 8) {
 				System.out.println("8글자 미만으로 설정해주세요");
+				Thread.sleep(1000);
 			} else {
 				break;
 			}
 
 		}
+		clear();
 		return Id;
 	}
 
@@ -144,6 +145,11 @@ protected String nonMemberId;
 		temp.setMemberId(sc.nextLine());
 		System.out.printf("PASSWORD>");
 		temp.setMemberPwd(sc.nextLine());
+		clear();
 		return temp;
+	}
+	public void clear() 
+	{
+		for (int i = 0; i < 50; ++i) System.out.println();
 	}
 }

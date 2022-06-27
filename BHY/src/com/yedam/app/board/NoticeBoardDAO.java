@@ -220,7 +220,6 @@ public class NoticeBoardDAO extends DAO {
 			rs = stmt.executeQuery(sql);
 			while (rs.next()) {
 				NoticeBoard = new NoticeBoard();
-				System.out.println(board_num);
 				NoticeBoard.setBoardNum(rs.getInt("board_num"));
 				NoticeBoard.setBoardTitle(rs.getString("board_title"));
 				NoticeBoard.setBoardContent(rs.getString("board_content"));

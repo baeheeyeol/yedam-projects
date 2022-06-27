@@ -127,7 +127,7 @@ public class MemberDAO extends DAO {
 		}
 	}
 
-	public Member selectOne(Member member) {
+	public Member selectOne(Member member) throws InterruptedException {
 
 		Member loginInfo = null;
 		try {
@@ -146,6 +146,7 @@ public class MemberDAO extends DAO {
 					loginInfo.setRole(rs.getInt("member_role"));
 				} else {
 					System.out.println("비밀번호가 일치하지 않습니다.");
+					Thread.sleep(1000);
 				}
 			} else {
 				System.out.println("아이디가 존재하지 않습니다.");

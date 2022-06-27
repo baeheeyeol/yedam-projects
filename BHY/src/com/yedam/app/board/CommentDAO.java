@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.yedam.app.common.DAO;
+import com.yedam.app.member.Member;
 
 public class CommentDAO extends DAO {
 
@@ -42,13 +43,13 @@ public class CommentDAO extends DAO {
 	}
 
 	// 입력
-	public void insert(int boardNum, String memberId, String content) {
+	public void insert(int boardNum, Member member, String content) {
 		try {
 			connect();
 			String sql = "INSERT INTO board_comment (board_num,member_id,comment_num,comment_content) VALUES(?,?,COMMENT_SEQ.NEXTVAL,?)";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, boardNum);
-			pstmt.setString(2, memberId);
+			pstmt.setString(2, member.getMemberId());
 			pstmt.setString(3, content);
 			int result = pstmt.executeUpdate();
 			if (result > 0) {
@@ -64,13 +65,13 @@ public class CommentDAO extends DAO {
 	}
 
 	// 대댓글
-	public void insertToInsert(int boardNum, String memberId, String content, int commentNumParent) {
+	public void insertToInsert(int boardNum, Member member, String content, int commentNumParent) {
 		try {
 			connect();
 			String sql = "INSERT INTO board_comment (board_num,member_id,comment_num,comment_content,comment_num_parent) VALUES(?,?,COMMENT_SEQ.NEXTVAL,?,?)";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, boardNum);
-			pstmt.setString(2, memberId);
+			pstmt.setString(2, member.getMemberId());
 			pstmt.setString(3, content);
 			pstmt.setInt(4, commentNumParent);
 			int result = pstmt.executeUpdate();

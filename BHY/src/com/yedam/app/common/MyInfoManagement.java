@@ -14,9 +14,9 @@ public class MyInfoManagement extends Management {
 	BoardDAO bDAO = BoardDAO.getInstance();
 	NoticeBoardDAO ntDAO = NoticeBoardDAO.getInstance();
 
-	public MyInfoManagement(Member member) {
-		List<Board> list = bDAO.selectAll(member.getMemberId());
+	public MyInfoManagement(Member member) throws InterruptedException {
 		while (true) {
+			clear();
 			menuPrint(member);
 			int menuNo = menuSelect();
 			if (menuNo == 1) {
@@ -43,6 +43,7 @@ public class MyInfoManagement extends Management {
 	}
 
 	protected void info(Member member) {
+		clear();
 		System.out.println("==================");
 		System.out.println("ID : " + member.getMemberId());
 		System.out.println("PASSWORD : " + member.getMemberPwd());
@@ -60,7 +61,7 @@ public class MyInfoManagement extends Management {
 
 	}
 
-	protected void myBoard(Member member) {
+	protected void myBoard(Member member) throws InterruptedException {
 		while (true) {
 			if (member.getRole() == 0) {
 				readNotice();
@@ -84,12 +85,13 @@ public class MyInfoManagement extends Management {
 		System.out.printf("번호>");
 	}
 
-	protected int menuSelect() {
+	protected int menuSelect() throws InterruptedException {
 		int menu = 0;
 		try {
 			menu = Integer.parseInt(sc.nextLine());
 		} catch (NumberFormatException e) {
 			System.out.println("숫자를 입력해주시기 바랍니다.");
+			Thread.sleep(1000);
 		}
 		return menu;
 	}
@@ -98,7 +100,12 @@ public class MyInfoManagement extends Management {
 		System.out.println("뒤로가기");
 	}
 
-	protected void showInputError() {
+	protected void showInputError() throws InterruptedException {
 		System.out.println("메뉴에서 입력해주시기 바랍니다.");
+		Thread.sleep(1000);
+	}
+	public void clear() {
+		for (int i = 0; i < 50; ++i)
+			System.out.println();
 	}
 }

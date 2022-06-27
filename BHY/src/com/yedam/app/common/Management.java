@@ -16,8 +16,9 @@ public class Management {
 	public Management() {
 	}
 
-	public void ManagementRun(Member member) {
+	public void ManagementRun(Member member) throws InterruptedException {
 		while (true) {
+			clear();
 			readNotice();
 			readBoard(member);
 			menuPrint(member);
@@ -51,7 +52,7 @@ public class Management {
 		System.out.print("번호>");
 	}
 
-	void boardChoiceType(Member member) {
+	void boardChoiceType(Member member) throws InterruptedException {
 		int boardType = selectBoardType();
 		while (true)
 			if (boardType == 1) {
@@ -69,7 +70,7 @@ public class Management {
 			}
 	}
 
-	protected void selectBoard(Member member) {
+	protected void selectBoard(Member member) throws InterruptedException {
 		while (true) {
 			readBoardMy(member);
 			System.out.println("==================");
@@ -77,20 +78,22 @@ public class Management {
 			int boardNum = menuSelect();
 			if (existBoard(boardNum)) {
 				Board board = bDAO.selectOne(boardNum);
-				new BoardManagement().BoardManagementRun(board, member);
+				//new BoardManagement().BoardManagementRun(board, member);
+			new BoardManagement().BoardManagementRun(board, member);
 				return;
 			} else {
 				System.out.println("입력한 번호의 게시판이 없습니다.");
+				Thread.sleep(1000);
 			}
 		}
 
 	}
 
-	protected void selectBoard(Member member, int boardType) {
+	protected void selectBoard(Member member, int boardType) throws InterruptedException {
 		if (boardType == 1) {
+			clear();
 			readNotice();
-			System.out.println("선택할 게시판번호");
-			System.out.println("입력>");
+			System.out.print("선택할 게시판번호 입력>");
 			int boardNum = menuSelect();
 			if (existNoticeBoard(boardNum)) {
 				NoticeBoard ntboard = ntDAO.selectOneTitle(boardNum);
@@ -98,9 +101,11 @@ public class Management {
 				return;
 			} else {
 				System.out.println("입력한 번호의 게시판이 없습니다.");
+				Thread.sleep(1000);
 			}
 			return;
 		} else if (boardType == 2) {
+			clear();
 			readBoard(member);
 			System.out.printf("선택할 게시판번호 입력>");
 			int boardNum = menuSelect();
@@ -110,10 +115,12 @@ public class Management {
 				return;
 			} else {
 				System.out.println("입력한 번호의 게시판이 없습니다.");
+				Thread.sleep(1000);
 			}
 			return;
 		} else {
 			System.out.println("다시 입력하세요.");
+			Thread.sleep(1000);
 		}
 	}
 
@@ -139,7 +146,7 @@ public class Management {
 		return false;
 	}
 
-	protected int selectBoardType() {
+	protected int selectBoardType() throws InterruptedException {
 		System.out.println("1.공지 2.자유 9.뒤로가기");
 		System.out.printf("게시판종류선택>");
 		int num = menuSelect();
@@ -186,7 +193,7 @@ public class Management {
 		}
 	}
 
-	protected void boardWrtie(Member member) {
+	protected void boardWrtie(Member member) throws InterruptedException {
 		if (member.getRole() == 0) {
 			System.out.println("1.공지 2.자유");
 			System.out.print("게시판 선택>");
@@ -202,7 +209,7 @@ public class Management {
 		inputBoard(member);
 	}
 
-	boolean anonymity() {
+	boolean anonymity() throws InterruptedException {
 		while (true) {
 			System.out.println("익명으로 하시겠습니까?");
 			System.out.println("1.네 2.아니요");
@@ -224,9 +231,10 @@ public class Management {
 		ntDAO.insertcontent(noticeBoard2);
 	}
 
-	void inputBoard(Member member) {
+	void inputBoard(Member member) throws InterruptedException {
 		Board board = BoardinputTitle(member);
 		bDAO.insert(board);
+		System.out.println("====================");
 		int boardNum = bDAO.seq();
 		Board board2 = BoardinputContent(boardNum, member);
 		bDAO.insertcontent(board2);
@@ -247,7 +255,7 @@ public class Management {
 		return noticeBoard;
 	}
 
-	protected Board BoardinputContent(int boardNum, Member member) {
+	protected Board BoardinputContent(int boardNum, Member member) throws InterruptedException {
 		Board board = new Board();
 		if (member.getRole() == 3) {
 			board.setBoardContent(inputContent(member));
@@ -265,14 +273,14 @@ public class Management {
 
 	protected Board BoardinputTitle(Member member) {
 		Board board = new Board();
-		System.out.println("제목>");
+		System.out.print("제목>");
 		board.setBoardTitle(sc.nextLine());
 		board.setMemberId(member.getMemberId());
 		return board;
 	}
 
 	String inputContent(Member member) {
-		System.out.println("저장시 \"저장\" 입력");
+		System.out.println("작성 완료시 \'저장\' 입력");
 		System.out.printf("내용>");
 		String content = sc.nextLine();
 		String temp = "";
@@ -286,12 +294,13 @@ public class Management {
 		return content;
 	}
 
-	protected int menuSelect() {
+	protected int menuSelect() throws InterruptedException {
 		int menu = 0;
 		try {
 			menu = Integer.parseInt(sc.nextLine());
 		} catch (NumberFormatException e) {
 			System.out.println("숫자를 입력해주시기 바랍니다.");
+				Thread.sleep(1000);
 		}
 		return menu;
 	}
@@ -300,7 +309,12 @@ public class Management {
 		System.out.println("프로그램을 종료합니다.");
 	}
 
-	protected void showInputError() {
+	protected void showInputError() throws InterruptedException {
 		System.out.println("메뉴에서 입력해주시기 바랍니다.");
+			Thread.sleep(1000);
+	}
+	public void clear() 
+	{
+		for (int i = 0; i < 45; ++i) System.out.println();
 	}
 }
