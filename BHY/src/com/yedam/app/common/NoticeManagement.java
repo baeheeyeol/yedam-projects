@@ -14,7 +14,6 @@ import com.yedam.app.board.NoticeCommentDAO;
 import com.yedam.app.member.Member;
 
 public class NoticeManagement  {
-	CommentDAO cDAO = CommentDAO.getInstance();
 	NoticeBoardDAO ntDAO = NoticeBoardDAO.getInstance();
 	NoticeCommentDAO ntcDAO =NoticeCommentDAO.getInstance();
 	Scanner sc = new Scanner(System.in);
@@ -47,7 +46,8 @@ public class NoticeManagement  {
 	}
 
 	private void selectedBoard(NoticeBoard noticeboard) {
-		System.out.println("선택한 게시판 : " +noticeboard.getBoardNum() + ". " + noticeboard.getBoardTitle());
+		System.out.print("선택한 게시판 : ");
+		System.out.println(noticeboard.getBoardNum() + ". " + noticeboard.getBoardTitle());
 	}
 
 	private void Delete(NoticeBoard noticeboard) {
@@ -88,10 +88,16 @@ public class NoticeManagement  {
 	// 읽기
 	private void Read(NoticeBoard noticeboard, String memberId) {
 		NoticeBoard noticeBoard = ntDAO.selectOneAll(noticeboard.getBoardNum());
-		System.out.println(noticeBoard.getBoardNum() + ". " + noticeBoard.getBoardTitle() + " : " + noticeBoard.getBoardContent() + " ");
-
+		System.out.println("=========================");
+		System.out.println(noticeBoard.getBoardNum() + ". " + noticeBoard.getBoardTitle());
+		System.out.println("=========================");
+		System.out.println(noticeBoard.getBoardContent());
+		System.out.println("=========================");
+		System.out.println("작성자 : "+ noticeBoard.getMemberId());
+		System.out.println("=========================");
 		List<NoticeComment> list = ntcDAO.selectAll(noticeboard.getBoardNum());
 		System.out.println("댓글");
+		System.out.println("=========================");
 		for (NoticeComment noticeComment : list) {
 			if (noticeComment.getCommentInvisible() == 1) {
 				System.out.println("삭제된 댓글입니다.");
@@ -100,6 +106,7 @@ public class NoticeManagement  {
 						+ noticeComment.getMemberId());
 			}
 		}
+		System.out.println("=========================");
 		new NoticeCommentManagement(memberId, noticeboard);
 	}
 

@@ -7,13 +7,14 @@ import com.yedam.app.board.Board;
 import com.yedam.app.board.BoardDAO;
 import com.yedam.app.board.Comment;
 import com.yedam.app.board.CommentDAO;
+import com.yedam.app.member.Member;
 
 public class ComentManagement {
 	Scanner sc = new Scanner(System.in);
 	BoardDAO bDAO = BoardDAO.getInstance();
 	CommentDAO cDAO = CommentDAO.getInstance();
 
-	public ComentManagement(String memberId, Board board) {
+	public ComentManagement(Member member, Board board) {
 
 		while (true) {
 			menuPrint();
@@ -21,13 +22,13 @@ public class ComentManagement {
 			int menuNo = menuSelect();
 			if (menuNo == 1) {
 				// 입력
-				insertComent(memberId, board.getBoardNum());
+				insertComent(member.getMemberId(), board);
 			} else if (menuNo == 2) {
 				// 수정
-				updateComent(memberId, board.getBoardNum());
+				updateComent(member.getMemberId());
 			} else if (menuNo == 3) {
 				// 삭제
-				deleteComent(memberId, board.getBoardNum());
+				deleteComent(member.getMemberId());
 			} else if (menuNo == 9) {
 				exit();
 				break;
@@ -38,7 +39,7 @@ public class ComentManagement {
 		}
 	}
 
-	void deleteComent(String memberId, int boardNum) {
+	void deleteComent(String memberId) {
 		int commentNum = selectComment();
 		if (checkComentNum(commentNum)) {
 			if (checkMemberId(memberId)) {
@@ -61,7 +62,7 @@ public class ComentManagement {
 		return false;
 	}
 
-	protected void updateComent(String memberId, int boardNum) {
+	protected void updateComent(String memberId) {
 		int commentNum = selectComment();
 		if (checkComentNum(commentNum)) {
 			if (checkMemberId(memberId)) {
@@ -71,16 +72,31 @@ public class ComentManagement {
 	}
 
 	// 등록
-	protected void insertComent(String memberId, int boardNum) {
-		int num = choiceCommentWay();
+	protected void insertComent(String memberId,Board board) {
+		System.out.println("1.댓글 2.대댓글");
+		System.out.print("번호>");
+		int num = menuSelect();
 		if (num == 1) {
 			// 댓글 작성
-			cDAO.insert(boardNum, memberId, inputContent());
+			cDAO.insert(board.getBoardNum(), memberId, inputContent());
 		} else if (num == 2) {
 			// 대댓글 작성
+			List<Comment> list = cDAO.selectAll(board.getBoardNum());
+			System.out.println("댓글");
+			System.out.println("====================");
+			for (Comment comment : list) {
+				if (comment.getCommentInvisible() == 1) {
+					System.out.println(comment.getCommentNum()+". 삭제된 댓글입니다.");
+				} else {
+					System.out.println(comment.getCommentNum() + "." + comment.getCommentContent() + " /id : "
+							+ comment.getMemberId());
+				}
+			}
+			System.out.println("====================");
 			int commentNum = selectComment();
+			
 			if (checkComentNum(commentNum)) {
-				cDAO.insertToInsert(boardNum, memberId, inputContent(), commentNum);
+				cDAO.insertToInsert(board.getBoardNum(), memberId, inputContent(), commentNum);
 			}
 		}
 	}
@@ -88,7 +104,7 @@ public class ComentManagement {
 	int selectComment() {
 		int num = 0;
 		try {
-			System.out.println("댓글번호>");
+			System.out.print("댓글번호>");
 			num = Integer.parseInt(sc.nextLine());
 		} catch (NumberFormatException e) {
 			System.out.println("숫자를 입력해주시기 바랍니다.");
@@ -123,11 +139,6 @@ public class ComentManagement {
 		}
 		System.out.println("선택한 번호의 댓글이 존재하지 않습니다.");
 		return false;
-	}
-
-	int choiceCommentWay() {
-		System.out.println("1.댓글 작성 2.대댓글 작성");
-		return menuSelect();
 	}
 
 	void ComentUpdate(String memberId, int boardNum) {

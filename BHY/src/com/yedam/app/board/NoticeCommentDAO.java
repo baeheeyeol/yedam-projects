@@ -45,8 +45,6 @@ public class NoticeCommentDAO extends DAO{
 		public void insert(int boardNum, String memberId, String content) {
 			try {
 				connect();
-				System.out.println(boardNum);
-				System.out.println(memberId);
 				String sql = "INSERT INTO notice_board_comment (board_num,member_id,comment_num,comment_content) VALUES(?,?,COMMENT_SEQ.NEXTVAL,?)";
 				pstmt = conn.prepareStatement(sql);
 				pstmt.setInt(1, boardNum);
@@ -179,7 +177,7 @@ public class NoticeCommentDAO extends DAO{
 			try {
 
 				connect();
-				String sql = "SELECT comment_num, lpad(' ',(level),'=')||comment_content AS content,member_id,COMMENT_INVISIBLE FROM NOTICE_BOARD_COMMENT "
+				String sql = "SELECT comment_num, lpad('',(level*2),'=')||comment_content AS content,member_id,COMMENT_INVISIBLE FROM NOTICE_BOARD_COMMENT "
 						+ "WHERE BOARD_NUM = " + boardNum + " START WITH comment_num_parent=0"
 						+ " CONNECT BY prior COMMENT_NUM=comment_num_PARENT";
 				stmt = conn.createStatement();

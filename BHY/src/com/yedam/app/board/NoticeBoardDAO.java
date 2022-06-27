@@ -46,7 +46,6 @@ public class NoticeBoardDAO extends DAO {
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, noticeBoard.getBoardNum());
 			pstmt.setString(2, noticeBoard.getBoardContent());
-			System.out.println(noticeBoard.getBoardNum());
 			int result = pstmt.executeUpdate();
 			if (result > 0) {
 				System.out.println("등록되었습니다.");
@@ -210,13 +209,13 @@ public class NoticeBoardDAO extends DAO {
 		return ntBoard;
 	}
 
-	// 단건조회 - 제목+내용
+	// 단건조회 - 제목 + 내용
 	public NoticeBoard selectOneAll(int board_num) {
 		NoticeBoard NoticeBoard = null;
 		try {
 			connect();
 			String sql = "SELECT * FROM Notice_board join Notice_board_content using (board_num) WHERE BOARD_NUM = "
-					+ board_num + " ORDER BY board_num";
+					+ board_num;
 			stmt = conn.createStatement();
 			rs = stmt.executeQuery(sql);
 			while (rs.next()) {
@@ -225,6 +224,7 @@ public class NoticeBoardDAO extends DAO {
 				NoticeBoard.setBoardNum(rs.getInt("board_num"));
 				NoticeBoard.setBoardTitle(rs.getString("board_title"));
 				NoticeBoard.setBoardContent(rs.getString("board_content"));
+				NoticeBoard.setMemberId(rs.getString("member_id"));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();

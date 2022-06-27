@@ -2,7 +2,6 @@ package com.yedam.app.common;
 
 import java.util.List;
 import java.util.Scanner;
-
 import com.yedam.app.board.Board;
 import com.yedam.app.board.BoardDAO;
 import com.yedam.app.board.Comment;
@@ -15,20 +14,22 @@ public class BoardManagement {
 	BoardDAO bDAO = BoardDAO.getInstance();
 	Scanner sc = new Scanner(System.in);
 
-	public BoardManagement(Board board, Member member) {
-		
+	public BoardManagement() {
+	};
+
+	public void BoardManagementRun(Board board, Member member) {
+
 		while (true) {
 			selectedBoard(board);
-			menuPrint(board, member.getMemberId());
-
+			menuPrint(board, member);
 			int menuNo = menuSelect();
 			if (menuNo == 1) {
 				// 읽기
-				Read(board, member.getMemberId());
-			} else if (menuNo == 2) {
+				Read(board, member);
+			} else if (menuNo == 2 && (member.getMemberId().equals(board.getMemberId()) || member.getRole() == 0)) {
 				// 수정
-				Update(board, member.getMemberId());
-			} else if (menuNo == 3) {
+				Update(board, member);
+			} else if (menuNo == 3 && (member.getMemberId().equals(board.getMemberId()) || member.getRole() == 0)) {
 				// 삭제
 				Delete(board);
 				break;
@@ -43,7 +44,10 @@ public class BoardManagement {
 	}
 
 	private void selectedBoard(Board board) {
+		System.out.println("====================");
+		System.out.print("선택한 게시판 : ");
 		System.out.println(board.getBoardNum() + ". " + board.getBoardTitle());
+		System.out.println("====================");
 	}
 
 	private void Delete(Board board) {
@@ -62,7 +66,7 @@ public class BoardManagement {
 		}
 	}
 
-	private void Update(Board board, String memberId) {
+	private void Update(Board board, Member member) {
 		while (true) {
 			menuPrint();
 			int menuNo = menuSelect();
@@ -71,45 +75,71 @@ public class BoardManagement {
 				// 제목 수정
 				input = title();
 				bDAO.updateTitle(input, board);
-				Read(board, memberId);
+				Read(board, member);
 			} else if (menuNo == 2) {
 				// 내용 수정
 				input = content();
 				bDAO.updateContent(input, board);
-				Read(board, memberId);
+				Read(board, member);
 			} else if (menuNo == 9) {
 				exit();
 				break;
+			} else {
+				showInputError();
 			}
 		}
 	}
 
 	// 읽기
-	private void Read(Board board, String memberId) {
-		Board temp = bDAO.selectContent(board.getBoardNum());
-		System.out.println(temp.getBoardNum() + ". " + temp.getBoardTitle() + " : " + temp.getBoardContent() + " ");
-
-		List<Comment> list = cDAO.selectAll(board.getBoardNum());
+	private void Read(Board board, Member member) {
+		Board board1 = bDAO.selectOneAll(board.getBoardNum());
+		System.out.println("=========================");
+		System.out.println(board1.getBoardNum() + ". " + board1.getBoardTitle());
+		System.out.println("=========================");
+		System.out.println(board1.getBoardContent());
+		System.out.println("=========================");
+		if (board.getBoardInvisible() == 1 || member.getRole() == 0) {
+			System.out.println("작성자 : " + board1.getMemberId());
+		} else {
+			System.out.println("작성자 : ****");
+		}
+		System.out.println("=========================");
+		List<Comment> list = cDAO.selectAll(board1.getBoardNum());
 		System.out.println("댓글");
 		for (Comment comment : list) {
 			if (comment.getCommentInvisible() == 1) {
-				System.out.println("삭제된 댓글입니다.");
+				System.out.println(comment.getCommentNum() + ". 삭제된 댓글입니다.");
 			} else {
 				System.out.println(comment.getCommentNum() + "." + comment.getCommentContent() + " /id : "
 						+ comment.getMemberId());
 			}
 		}
-		new ComentManagement(memberId, board);
+		
+		System.out.println("=========================");
+		System.out.println("1.댓글 2.신고하기 9.뒤로가기");
+		System.out.print("번호>");
+		int num = menuSelect();
+		if (num == 1) {
+			new ComentManagement(member, board);
+			return;
+		} else if (num == 2) {
+			new ReportBoardManagement().insertReport(member, board1);
+			return;
+		} else if (num == 9) {
+			exit();
+			return;
+		}
 	}
 
-	protected void menuPrint(Board board, String memberId) {
+	protected void menuPrint(Board board, Member member) {
 		String sql = "1.읽기";
 		Board temp = bDAO.selectOne(board.getBoardNum());
-		if (temp.getMemberId().equals(memberId)) {
+		if (temp.getMemberId().equals(member.getMemberId()) || member.getRole() == 0) {
 			sql += " 2.수정 3.삭제";
 		}
 		sql += " 9.뒤로가기";
 		System.out.println(sql);
+		System.out.print("번호>");
 	};
 
 	protected String title() {

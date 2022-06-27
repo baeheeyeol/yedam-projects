@@ -75,7 +75,9 @@ public class NoticeCommentManagement {
 
 	// 등록
 	protected void insertComent(String memberId, int boardNum) {
-		int num = choiceCommentWay();
+		System.out.println("1.댓글 작성 2.대댓글 작성");
+		System.out.print("번호>");
+		int num = menuSelect();
 		if (num == 1) {
 			// 댓글 작성
 			ntDAO.insert(boardNum, memberId, inputContent());
@@ -91,7 +93,7 @@ public class NoticeCommentManagement {
 	int selectComment() {
 		int num = 0;
 		try {
-			System.out.println("댓글번호>");
+			System.out.print("댓글번호>");
 			num = Integer.parseInt(sc.nextLine());
 		} catch (NumberFormatException e) {
 			System.out.println("숫자를 입력해주시기 바랍니다.");
@@ -128,10 +130,7 @@ public class NoticeCommentManagement {
 		return false;
 	}
 
-	int choiceCommentWay() {
-		System.out.println("1.댓글 작성 2.대댓글 작성");
-		return menuSelect();
-	}
+	
 
 	void ComentUpdate(String memberId, int boardNum) {
 		ntDAO.insert(boardNum, memberId, insertContent());

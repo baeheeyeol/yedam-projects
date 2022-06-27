@@ -171,13 +171,13 @@ public class BoardDAO extends DAO {
 		return list;
 	}
 
-	// 게시판 내용 조회
-	public Board selectContent(int boardNum) {
+	// 단건 조회 - 제목 + 내용
+	public Board selectOneAll(int boardNum) {
 		Board board = null;
 		;
 		try {
 			connect();
-			String sql = "SELECT * FROM BOARD JOIN BOARD_CONTENT USING(BOARD_NUM) WHERE BOARD_NUM = '" + boardNum + "'";
+			String sql = "SELECT * FROM BOARD JOIN BOARD_CONTENT USING(BOARD_NUM) WHERE BOARD_NUM = " + boardNum;
 			stmt = conn.createStatement();
 			rs = stmt.executeQuery(sql);
 			if (rs.next()) {
@@ -280,6 +280,26 @@ public class BoardDAO extends DAO {
 		try {
 			connect();
 			String sql = "SELECT * FROM BOARD WHERE MEMBER_ID = '" + memberId + "'";
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(sql);
+			while (rs.next()) {
+				Board Board = new Board();
+				Board.setBoardNum(rs.getInt("board_num"));
+				Board.setBoardTitle(rs.getString("board_title"));
+				list.add(Board);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			disconnect();
+		}
+		return list;
+	}
+	public List<Board> selectAll1() {
+		List<Board> list = new ArrayList<>();
+		try {
+			connect();
+			String sql = "SELECT * FROM BOARD";
 			stmt = conn.createStatement();
 			rs = stmt.executeQuery(sql);
 			while (rs.next()) {

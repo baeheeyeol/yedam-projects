@@ -1,10 +1,7 @@
 package com.yedam.app.common;
 
-import java.io.Console;
 import java.util.List;
-
 import java.util.Scanner;
-
 import com.yedam.app.board.Board;
 import com.yedam.app.board.BoardDAO;
 import com.yedam.app.board.NoticeBoard;
@@ -16,12 +13,14 @@ public class Management {
 	BoardDAO bDAO = BoardDAO.getInstance();
 	NoticeBoardDAO ntDAO = NoticeBoardDAO.getInstance();
 
-	public Management(Member member) {
-		int role = member.getRole();
+	public Management() {
+	}
+
+	public void ManagementRun(Member member) {
 		while (true) {
 			readNotice();
 			readBoard(member);
-			menuPrint();
+			menuPrint(member);
 			int menuNo = menuSelect();
 			if (menuNo == 1) {
 				// 작성
@@ -29,8 +28,9 @@ public class Management {
 			} else if (menuNo == 2) {
 				// 선택
 				boardChoiceType(member);
-			} else if (menuNo == 3) {
+			} else if (menuNo == 3 && member.getRole() != 3) {
 				// 내 정보
+				new MyInfoManagement(member);
 			} else if (menuNo == 9) {
 				// 프로그램 종료
 				exit();
@@ -41,8 +41,14 @@ public class Management {
 		}
 	}
 
-	void menuPrint() {
-		System.out.println("1. 작성 2. 선택 3.내 정보 9.프로그램종료");
+	void menuPrint(Member member) {
+		String str = "1.작성 2.선택";
+		if (member.getRole() != 3) {
+			str += " 3.내 정보";
+		}
+		str += " 9.프로그램종료";
+		System.out.println(str);
+		System.out.print("번호>");
 	}
 
 	void boardChoiceType(Member member) {
@@ -59,15 +65,32 @@ public class Management {
 				break;
 			} else {
 				showInputError();
+				break;
 			}
-		System.out.flush();
+	}
+
+	protected void selectBoard(Member member) {
+		while (true) {
+			readBoardMy(member);
+			System.out.println("==================");
+			System.out.printf("선택할 게시판번호 입력>");
+			int boardNum = menuSelect();
+			if (existBoard(boardNum)) {
+				Board board = bDAO.selectOne(boardNum);
+				new BoardManagement().BoardManagementRun(board, member);
+				return;
+			} else {
+				System.out.println("입력한 번호의 게시판이 없습니다.");
+			}
+		}
 
 	}
 
 	protected void selectBoard(Member member, int boardType) {
 		if (boardType == 1) {
 			readNotice();
-			System.out.printf("선택할 게시판번호 입력>");
+			System.out.println("선택할 게시판번호");
+			System.out.println("입력>");
 			int boardNum = menuSelect();
 			if (existNoticeBoard(boardNum)) {
 				NoticeBoard ntboard = ntDAO.selectOneTitle(boardNum);
@@ -83,7 +106,7 @@ public class Management {
 			int boardNum = menuSelect();
 			if (existBoard(boardNum)) {
 				Board board = bDAO.selectOne(boardNum);
-				new BoardManagement(board, member);
+				new BoardManagement().BoardManagementRun(board, member);
 				return;
 			} else {
 				System.out.println("입력한 번호의 게시판이 없습니다.");
@@ -127,7 +150,7 @@ public class Management {
 		List<NoticeBoard> list = ntDAO.selelctAll();
 		System.out.println("-=+-=+-=+공지+=-+=-+=-+=-");
 		for (NoticeBoard Ntboard : list) {
-			System.out.println(Ntboard.getBoardNum() + ". " + Ntboard.getBoardTitle());
+			System.out.println(Ntboard.getBoardNum() + ".\t" + Ntboard.getBoardTitle());
 		}
 		System.out.println("=*=*=*=*=*=*=*=*=*=*=*=*");
 	}
@@ -137,25 +160,30 @@ public class Management {
 		System.out.println("*********게시판**********");
 		for (Board board : list) {
 			if (member.getRole() == 0) {
-				String str = board.getBoardNum() + ". " + board.getBoardTitle() + " 작성자 : " + board.getMemberId();
-			
-				if(board.getBoardInvisible()==1) 
-				{
+				String str = board.getBoardNum() + ".\t" + board.getBoardTitle() + "\t\t작성자 : " + board.getMemberId();
+
+				if (board.getBoardInvisible() == 1) {
 					str += "/ 익명여부 : o";
-				}
-				else 
-				{
+				} else {
 					str += " /익명여부 : x";
 				}
-			System.out.println(str);
+				System.out.println(str);
 			} else if (board.getBoardInvisible() == 1 && !member.getMemberId().equals(board.getMemberId())) {
-				System.out.println(board.getBoardNum() + ". " + board.getBoardTitle() + " 작성자 : " + "****");
+				System.out.println(board.getBoardNum() + ".\t" + board.getBoardTitle() + "\t\t작성자 : " + "****");
 			} else {
 				System.out
-						.println(board.getBoardNum() + ". " + board.getBoardTitle() + " 작성자 : " + board.getMemberId());
+						.println(board.getBoardNum() + ".\t" + board.getBoardTitle() + "\t\t작성자 : " + board.getMemberId());
 			}
 		}
 		System.out.println("************************");
+	}
+
+	protected void readBoardMy(Member member) {
+		List<Board> list = bDAO.selectAll(member.getMemberId());
+		System.out.println("*********게시판**********");
+		for (Board board : list) {
+			System.out.println(board.getBoardNum() + ".\t\t" + board.getBoardTitle());
+		}
 	}
 
 	protected void boardWrtie(Member member) {
@@ -192,9 +220,7 @@ public class Management {
 		NoticeBoard noticeBoard = NoticeBoardinputTitle(member);
 		ntDAO.insert(noticeBoard);
 		int boardNum = ntDAO.seq();
-		System.out.println(boardNum);
 		NoticeBoard noticeBoard2 = NoticeBoardinputContent(boardNum, member);
-		System.out.println(noticeBoard2.getBoardNum());
 		ntDAO.insertcontent(noticeBoard2);
 	}
 
@@ -215,7 +241,7 @@ public class Management {
 
 	protected NoticeBoard NoticeBoardinputTitle(Member member) {
 		NoticeBoard noticeBoard = new NoticeBoard();
-		System.out.println("제목>");
+		System.out.print("제목>");
 		noticeBoard.setBoardTitle(sc.nextLine());
 		noticeBoard.setMemberId(member.getMemberId());
 		return noticeBoard;
@@ -246,13 +272,13 @@ public class Management {
 	}
 
 	String inputContent(Member member) {
-		System.out.println("저장시 본인 비밀번호 입력");
+		System.out.println("저장시 \"저장\" 입력");
 		System.out.printf("내용>");
 		String content = sc.nextLine();
 		String temp = "";
 		while (!content.isEmpty()) {
 			temp = sc.nextLine();
-			if (temp.equals(member.getMemberPwd())) {
+			if (temp.equals("저장")) {
 				break;
 			}
 			content += "\n" + temp;
