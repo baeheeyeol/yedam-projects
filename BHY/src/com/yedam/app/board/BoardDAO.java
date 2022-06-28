@@ -322,7 +322,7 @@ public class BoardDAO extends DAO {
 		List<Board> list = new ArrayList<>();
 		try {
 			connect();
-			String sql = "SELECT * FROM board join board_content using (board_num) ORDER BY board_num";
+			String sql = "SELECT * FROM board join board_content using (board_num) ORDER BY board_num desc";
 			stmt = conn.createStatement();
 			rs = stmt.executeQuery(sql);
 			while (rs.next()) {

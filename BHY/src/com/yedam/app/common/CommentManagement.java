@@ -108,7 +108,7 @@ public class CommentManagement extends BoardManagement {
 			System.out.print("댓글번호>");
 			num = Integer.parseInt(sc.nextLine());
 		} catch (NumberFormatException e) {
-			System.out.println("숫자를 입력해주시기 바랍니다.");
+			System.err.println("숫자를 입력해주시기 바랍니다.");
 			Thread.sleep(1000);
 		}
 		return num;
@@ -125,15 +125,13 @@ public class CommentManagement extends BoardManagement {
 	boolean checkMemberId(Member member) throws InterruptedException {
 		List<Comment> list = cDAO.selectAll();
 		for (Comment comment : list) {
-			System.out.println("1");
-			System.out.println( comment.getMemberId());
-			System.out.println("2");
-			System.out.println(member.getMemberId());
 			if (comment.getMemberId().equals(member.getMemberId())) {
 				return true;
 			}
 		}
-		System.out.println("본인의 댓글이 아닙니다.");
+		System.err.println("--------------------------------------------------");
+		System.err.println("본인의 댓글을 선택해주세요.");
+		System.err.println("--------------------------------------------------");
 		Thread.sleep(1000);
 		return false;
 	}
@@ -146,7 +144,9 @@ public class CommentManagement extends BoardManagement {
 				return true;
 			}
 		}
-		System.out.println("선택한 번호의 댓글이 존재하지 않습니다.");
+		System.err.println("--------------------------------------------------");
+		System.err.println("선택한 번호의 댓글이 존재하지 않습니다.");
+		System.err.println("--------------------------------------------------");
 		Thread.sleep(1000);
 		return false;
 	}
@@ -161,7 +161,9 @@ public class CommentManagement extends BoardManagement {
 	}
 
 	protected void menuPrint() {
-		System.out.println("1.댓글작성\t2.댓글수정\t3.댓글삭제\t9.뒤로가기");
+		System.out.println("--------------------------------------------------");
+		System.out.println("|1.댓글작성 2.댓글수정 3.댓글삭제 9.뒤로가기                |"                ); 
+		System.out.println("--------------------------------------------------");
 		System.out.print("번호>");
 	}
 

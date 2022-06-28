@@ -21,7 +21,6 @@ public class MyInfoManagement extends Management {
 			menuPrint(member);
 			int menuNo = menuSelect();
 			if (menuNo == 1) {
-
 				// 정보
 				info(member);
 			} else if (menuNo == 2) {

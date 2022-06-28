@@ -100,7 +100,7 @@ public class NoticeCommentManagement extends NoticeManagement {
 			// 대댓글 작성
 			int commentNum = selectComment();
 			if (checkComentNum(commentNum)) {
-				ntDAO.insertToInsert(noticeBoard.getBoardNum(), member.getMemberId(), inputContent(), commentNum);
+				ntDAO.insertToInsert(noticeBoard.getBoardNum(), member.getMemberId(), inputContent(noticeBoard), commentNum);
 			}
 		}
 	}
@@ -111,7 +111,7 @@ public class NoticeCommentManagement extends NoticeManagement {
 			System.out.print("댓글번호>");
 			num = Integer.parseInt(sc.nextLine());
 		} catch (NumberFormatException e) {
-			System.out.println("숫자를 입력해주시기 바랍니다.");
+			System.err.println("숫자를 입력해주시기 바랍니다.");
 			Thread.sleep(1000);
 		}
 		return num;
@@ -165,7 +165,7 @@ public class NoticeCommentManagement extends NoticeManagement {
 
 	protected void menuPrint() {
 		System.out.println("--------------------------------------------------");
-		System.out.println("1.댓글작성 2.댓글수정 3.댓글삭제 9.뒤로가기");
+		System.out.println("|1.댓글작성 2.댓글수정 3.댓글삭제 9.뒤로가기                |");
 		System.out.println("--------------------------------------------------");
 		System.out.print("번호>");
 	}
@@ -175,7 +175,9 @@ public class NoticeCommentManagement extends NoticeManagement {
 		try {
 			menu = Integer.parseInt(sc.nextLine());
 		} catch (NumberFormatException e) {
-			System.out.println("숫자를 입력해주시기 바랍니다.");
+			System.err.println("--------------------------------------------------");
+			System.err.println("숫자를 입력해주시기 바랍니다.");
+			System.err.println("--------------------------------------------------");
 			Thread.sleep(1000);
 		}
 		return menu;
@@ -186,7 +188,9 @@ public class NoticeCommentManagement extends NoticeManagement {
 	}
 
 	protected void showInputError() throws InterruptedException {
-		System.out.println("메뉴에서 입력해주시기 바랍니다.");
+		System.err.println("--------------------------------------------------");
+		System.err.println("메뉴에서 입력해주시기 바랍니다.");
+		System.err.println("--------------------------------------------------");
 		Thread.sleep(1000);
 	}
 

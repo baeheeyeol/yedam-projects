@@ -177,7 +177,7 @@ public class NoticeCommentDAO extends DAO{
 			try {
 
 				connect();
-				String sql = "SELECT comment_num, lpad('',(level*2),'=')||comment_content AS content,member_id,COMMENT_INVISIBLE FROM NOTICE_BOARD_COMMENT "
+				String sql = "SELECT comment_num, lpad(' ',(level*2),' →')||comment_content AS content,member_id,COMMENT_INVISIBLE FROM NOTICE_BOARD_COMMENT "
 						+ "WHERE BOARD_NUM = " + boardNum + " START WITH comment_num_parent=0"
 						+ " CONNECT BY prior COMMENT_NUM=comment_num_PARENT";
 				stmt = conn.createStatement();

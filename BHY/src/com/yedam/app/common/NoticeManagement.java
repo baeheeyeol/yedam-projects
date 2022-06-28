@@ -161,7 +161,7 @@ public class NoticeManagement {
 		try {
 			menu = Integer.parseInt(sc.nextLine());
 		} catch (NumberFormatException e) {
-			System.out.println("숫자를 입력해주시기 바랍니다.");
+			System.err.println("숫자를 입력해주시기 바랍니다.");
 			Thread.sleep(1000);
 		}
 		return menu;
@@ -172,7 +172,7 @@ public class NoticeManagement {
 	}
 
 	protected void showInputError() throws InterruptedException {
-		System.out.println("메뉴에서 입력해주시기 바랍니다.");
+		System.err.println("메뉴에서 입력해주시기 바랍니다.");
 		Thread.sleep(1000);
 	}
 
