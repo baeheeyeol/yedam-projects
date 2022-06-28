@@ -6,6 +6,15 @@ public class ReportBoard {
 	private int reportBoardNum;
 	private String content;
 	private String boardTitle;
+	private String boardContent;
+
+	public String getBoardContent() {
+		return boardContent;
+	}
+
+	public void setBoardContent(String boardContent) {
+		this.boardContent = boardContent;
+	}
 
 	public String getBoardTitle() {
 		return boardTitle;

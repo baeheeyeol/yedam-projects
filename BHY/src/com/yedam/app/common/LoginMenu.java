@@ -41,9 +41,9 @@ public class LoginMenu {
 	}
 
 	protected void menuPrint() {
-		System.out.println("================================");
+		System.out.println("=======================================================");
 		System.out.println("1.회원가입 2.로그인 3.비회원 로그인 9.종료");
-		System.out.println("================================");
+		System.out.println("=======================================================");
 		System.out.print("번호>");
 	}
 
@@ -68,6 +68,8 @@ public class LoginMenu {
 	}
 
 	void loginNonMember() throws InterruptedException {
+		
+		
 		Member mb = new Member();
 		int num = (int) (Math.random() * 1001);
 		String nonMemberId = "guest" + num;
@@ -80,19 +82,18 @@ public class LoginMenu {
 		this.nonMember = true;
 		this.nonMemberId = mb.getMemberId();
 	}
+
 	void deleteNonMember() {
 		mDAO.delete(nonMemberId);
 	}
 
 	protected void login() throws InterruptedException {
-
 		Member inputInfo = memberInputAll();
 		if (MemberDAO.getInstance().selectOne(inputInfo) == null) {
 			return;
 		}
 		inputInfo = mDAO.selectOne(inputInfo.getMemberId());
 		new Management().ManagementRun(inputInfo);
-		;
 	}
 
 	// 회원가입
@@ -148,8 +149,9 @@ public class LoginMenu {
 		clear();
 		return temp;
 	}
-	public void clear() 
-	{
-		for (int i = 0; i < 50; ++i) System.out.println();
+
+	public void clear() {
+		for (int i = 0; i < 57; ++i)
+			System.out.println();
 	}
 }

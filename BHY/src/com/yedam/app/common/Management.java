@@ -70,19 +70,21 @@ public class Management {
 			}
 	}
 
-	protected void selectBoard(Member member) throws InterruptedException {
+	protected void selectMyBoard(Member member) throws InterruptedException {
 		while (true) {
 			readBoardMy(member);
-			System.out.println("==================");
+			System.out.println("=======================================================");
 			System.out.printf("선택할 게시판번호 입력>");
 			int boardNum = menuSelect();
 			if (existBoard(boardNum)) {
 				Board board = bDAO.selectOne(boardNum);
-				//new BoardManagement().BoardManagementRun(board, member);
-			new BoardManagement().BoardManagementRun(board, member);
+				// new BoardManagement().BoardManagementRun(board, member);
+				new BoardManagement().BoardManagementRun(board, member);
 				return;
 			} else {
+				System.err.println("========================");
 				System.out.println("입력한 번호의 게시판이 없습니다.");
+				System.err.println("========================");
 				Thread.sleep(1000);
 			}
 		}
@@ -91,19 +93,22 @@ public class Management {
 
 	protected void selectBoard(Member member, int boardType) throws InterruptedException {
 		if (boardType == 1) {
-			clear();
-			readNotice();
-			System.out.print("선택할 게시판번호 입력>");
-			int boardNum = menuSelect();
-			if (existNoticeBoard(boardNum)) {
-				NoticeBoard ntboard = ntDAO.selectOneTitle(boardNum);
-				new NoticeManagement(ntboard, member);
-				return;
-			} else {
-				System.out.println("입력한 번호의 게시판이 없습니다.");
-				Thread.sleep(1000);
+			while (true) {
+				clear();
+				readNotice();
+				System.out.print("선택할 게시판번호 입력>");
+				int boardNum = menuSelect();
+				if (existNoticeBoard(boardNum)) {
+					NoticeBoard ntboard = ntDAO.selectOneTitle(boardNum);
+					new NoticeManagement(ntboard, member);
+					return;
+				} else {
+					System.err.println("========================");
+					System.err.println("입력한 번호의 게시판이 없습니다.");
+					System.err.println("========================");
+					Thread.sleep(1000);
+				}
 			}
-			return;
 		} else if (boardType == 2) {
 			clear();
 			readBoard(member);
@@ -114,7 +119,9 @@ public class Management {
 				new BoardManagement().BoardManagementRun(board, member);
 				return;
 			} else {
-				System.out.println("입력한 번호의 게시판이 없습니다.");
+				System.err.println("========================");
+				System.err.println("입력한 번호의 게시판이 없습니다.");
+				System.err.println("========================");
 				Thread.sleep(1000);
 			}
 			return;
@@ -155,39 +162,41 @@ public class Management {
 
 	protected void readNotice() {
 		List<NoticeBoard> list = ntDAO.selelctAll();
-		System.out.println("-=+-=+-=+공지+=-+=-+=-+=-");
+		System.out.println("=*=*=*=*=*=*=*=*=*=*=*= 공지 *=*=*=*=*=*=*=*=*=*=*=");
 		for (NoticeBoard Ntboard : list) {
-			System.out.println(Ntboard.getBoardNum() + ".\t" + Ntboard.getBoardTitle());
+			System.out.println("No." + Ntboard.getBoardNum() + "\t" + Ntboard.getBoardTitle());
 		}
-		System.out.println("=*=*=*=*=*=*=*=*=*=*=*=*");
+		System.out.println("=*=*=*=*=*=*=*=*=*=*=*==*=*=*=*=*=*=*=*=*=*=*==*=*");
 	}
 
-	protected void readBoard(Member member) {
+	protected void readBoard(Member member) throws InterruptedException {
 		List<Board> list = bDAO.selelctAll();
-		System.out.println("*********게시판**********");
-		for (Board board : list) {
+		System.out.println("********************** 게시판 **********************");
+		for (int i = 0; i < list.size(); i++) {
 			if (member.getRole() == 0) {
-				String str = board.getBoardNum() + ".\t" + board.getBoardTitle() + "\t\t작성자 : " + board.getMemberId();
-
-				if (board.getBoardInvisible() == 1) {
+				String str = "No." + list.get(i).getBoardNum() + ".\t" + list.get(i).getBoardTitle() + "\t\t작성자 : "
+						+ list.get(i).getMemberId();
+				if (list.get(i).getBoardInvisible() == 1) {
 					str += "/ 익명여부 : o";
 				} else {
 					str += " /익명여부 : x";
 				}
 				System.out.println(str);
-			} else if (board.getBoardInvisible() == 1 && !member.getMemberId().equals(board.getMemberId())) {
-				System.out.println(board.getBoardNum() + ".\t" + board.getBoardTitle() + "\t\t작성자 : " + "****");
+			} else if (list.get(i).getBoardInvisible() == 1
+					&& !member.getMemberId().equals(list.get(i).getMemberId())) {
+				System.out.println("No." + list.get(i).getBoardNum() + ".\t" + list.get(i).getBoardTitle()
+						+ "\t\t작성자 : " + "****");
 			} else {
-				System.out
-						.println(board.getBoardNum() + ".\t" + board.getBoardTitle() + "\t\t작성자 : " + board.getMemberId());
+				System.out.println("No." + list.get(i).getBoardNum() + ".\t" + list.get(i).getBoardTitle()
+						+ "\t\t작성자 : " + list.get(i).getMemberId());
 			}
 		}
-		System.out.println("************************");
+		System.out.println("************************************************");
 	}
 
 	protected void readBoardMy(Member member) {
 		List<Board> list = bDAO.selectAll(member.getMemberId());
-		System.out.println("*********게시판**********");
+		System.out.println("***********************게시판***********************");
 		for (Board board : list) {
 			System.out.println(board.getBoardNum() + ".\t\t" + board.getBoardTitle());
 		}
@@ -195,7 +204,9 @@ public class Management {
 
 	protected void boardWrtie(Member member) throws InterruptedException {
 		if (member.getRole() == 0) {
+			System.err.println("--------------------------------------------------");
 			System.out.println("1.공지 2.자유");
+			System.err.println("--------------------------------------------------");
 			System.out.print("게시판 선택>");
 			int num = menuSelect();
 			if (num == 1) {
@@ -211,8 +222,10 @@ public class Management {
 
 	boolean anonymity() throws InterruptedException {
 		while (true) {
+			System.out.println("--------------------------------------------------");
 			System.out.println("익명으로 하시겠습니까?");
 			System.out.println("1.네 2.아니요");
+			System.out.println("--------------------------------------------------");
 			System.out.printf("선택>");
 			int num = menuSelect();
 			if (num == 1) {
@@ -234,7 +247,7 @@ public class Management {
 	void inputBoard(Member member) throws InterruptedException {
 		Board board = BoardinputTitle(member);
 		bDAO.insert(board);
-		System.out.println("====================");
+		System.out.println("==================================================");
 		int boardNum = bDAO.seq();
 		Board board2 = BoardinputContent(boardNum, member);
 		bDAO.insertcontent(board2);
@@ -299,8 +312,10 @@ public class Management {
 		try {
 			menu = Integer.parseInt(sc.nextLine());
 		} catch (NumberFormatException e) {
-			System.out.println("숫자를 입력해주시기 바랍니다.");
-				Thread.sleep(1000);
+			System.err.println("--------------------------------------------------");
+			System.err.println("숫자를 입력해주시기 바랍니다.");
+			System.err.println("--------------------------------------------------");
+			Thread.sleep(1000);
 		}
 		return menu;
 	}
@@ -310,11 +325,14 @@ public class Management {
 	}
 
 	protected void showInputError() throws InterruptedException {
-		System.out.println("메뉴에서 입력해주시기 바랍니다.");
-			Thread.sleep(1000);
+		System.err.println("--------------------------------------------------");
+		System.err.println("메뉴에서 입력해주시기 바랍니다.");
+		System.err.println("--------------------------------------------------");
+		Thread.sleep(1000);
 	}
-	public void clear() 
-	{
-		for (int i = 0; i < 45; ++i) System.out.println();
+
+	public void clear() {
+		for (int i = 0; i < 57; ++i)
+			System.out.println();
 	}
 }

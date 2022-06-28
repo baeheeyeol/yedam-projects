@@ -3,10 +3,6 @@ package com.yedam.app.common;
 import java.util.List;
 import java.util.Scanner;
 
-import com.yedam.app.board.Board;
-import com.yedam.app.board.BoardDAO;
-import com.yedam.app.board.Comment;
-import com.yedam.app.board.CommentDAO;
 import com.yedam.app.board.NoticeBoard;
 import com.yedam.app.board.NoticeBoardDAO;
 import com.yedam.app.board.NoticeComment;
@@ -181,7 +177,7 @@ public class NoticeManagement {
 	}
 
 	public void clear() {
-		for (int i = 0; i < 45; ++i)
+		for (int i = 0; i < 57; ++i)
 			System.out.println();
 	}
 }

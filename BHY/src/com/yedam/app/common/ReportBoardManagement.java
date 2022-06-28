@@ -16,17 +16,17 @@ public class ReportBoardManagement extends Management {
 
 	};
 
-	public void ReportBoardManagementRun(Member member) {
-		readReportBoard();
+	public void ReportBoardManagementRun(Member member) throws InterruptedException {
 		while (true) {
+			clear();
+			readReportBoardList();
 			menuPrint();
-			int num = menuSelect();
-			if (num == 1) {
-				readReportBoard();
-			} else if (num == 2) {
+			int menuNo = menuSelect();
+			if (menuNo == 1) {
 				// 선택
-				
-			} else if (num == 9) {
+				selectReportBoard();
+			} else if (menuNo == 9) {
+				// 종료
 				exit();
 				return;
 			} else {
@@ -35,17 +35,84 @@ public class ReportBoardManagement extends Management {
 		}
 	}
 
-	protected void readReportBoard() {
-		List<ReportBoard> list = rDAO.selectAll();
-		for (ReportBoard reportBoard : list) {
-			System.out.println("===========신고 내역============");
-			System.out.println(reportBoard.getReportBoardNum() + ". " + "게시판번호 : " + reportBoard.getBoardNum() + " "
-					+ reportBoard.getBoardTitle());
-			System.out.println("=============================");
+	protected void deleteBoard(int reportBoardNum) throws InterruptedException {
+		while (true) {
+			menuDeletePrint();
+			int menuNo = menuSelect();
+			if (menuNo == 1) {
+				// 선택
+				ReportBoard reportBoard = rDAO.selectOne(reportBoardNum);
+				rDAO.delete(reportBoard.getBoardNum(),reportBoardNum);
+				break;
+			} else if (menuNo == 9) {
+				// 종료
+				exit();
+				break;
+			} else {
+				showInputError();
+			}
 		}
 	}
 
+	protected void selectReportBoard() throws InterruptedException {
+		clear();
+		readReportBoardList();
+		int reportBoardNum = menuSelect();
+		if (existReportBoardNum(reportBoardNum)) {
+			readReportBoard(reportBoardNum);
+		}
+		deleteBoard(reportBoardNum);
+	}
+	protected boolean existReportBoardNum(int reportBoardNum) throws InterruptedException {
+		List<ReportBoard> list = rDAO.selectAll();
+		for (ReportBoard reportBoard : list) {
+			if (reportBoard.getReportBoardNum() == reportBoardNum) {
+				return true;
+			}
+		}
+		System.err.println("--------------------------------------------------");
+		System.err.println("입력한 번호는 없는 번호입니다.");
+		System.err.println("--------------------------------------------------");
+		Thread.sleep(1000);
+		return false;
+	}
+
+	protected void readReportBoard(int reportBoardNum) {
+		clear();
+		try {
+		ReportBoard reportBoard = rDAO.selectOne(reportBoardNum);
+		System.out.println("===================== 신고 내역 =====================");
+		System.out.println("신고번호 : " + reportBoard.getReportBoardNum());
+		System.out.println("신고내용 : " + reportBoard.getContent());
+		System.out.println("=================== 신고 된 게시판 ===================");
+		System.out.println("==================================================");
+		System.out.println("No." + reportBoard.getBoardNum() + " " + reportBoard.getBoardTitle());
+		System.out.println("==================================================");
+		System.out.println(reportBoard.getBoardContent());
+		System.out.println("==================================================");
+		System.out.println("작성자 : " + reportBoard.getMemberId());
+		System.out.println("==================================================");}
+		catch(NullPointerException e) 
+		{
+			return;
+		}
+	}
+
+	protected void readReportBoardList() {
+		System.out.println("=================== 신고 내역 ======================");
+		List<ReportBoard> list = rDAO.selectAll();
+		for (ReportBoard reportBoard : list) {
+			System.out.println("NO." + reportBoard.getReportBoardNum() + " \t " + "게시판번호 : " + reportBoard.getBoardNum()
+					+ " \t " + reportBoard.getBoardTitle());
+		}
+		System.out.println("==================================================");
+	}
+
 	protected void insertReport(Member member, Board board) {
+		clear();
+		System.out.println("==================================================");
+		System.out.println("신고내용");
+		System.out.println("==================================================");
 		rDAO.insert(member, board, inputContent(member));
 		return;
 	}
@@ -53,6 +120,7 @@ public class ReportBoardManagement extends Management {
 	protected int menuSelect() {
 		int menu = 0;
 		try {
+			System.out.print("번호>");
 			menu = Integer.parseInt(sc.nextLine());
 		} catch (NumberFormatException e) {
 			System.out.println("숫자를 입력해주시기 바랍니다.");
@@ -61,21 +129,15 @@ public class ReportBoardManagement extends Management {
 	}
 
 	protected void menuPrint() {
-		System.out.println("==============");
+		System.out.println("--------------------------------------------------");
 		System.out.println("1.선택 9.뒤로가기");
-		System.out.println("==============");
+		System.out.println("--------------------------------------------------");
 	}
-
-//	protected void menuPrint(Member member) {
-//		String str = "";
-//		if (member.getRole() == 1) {
-//			str += "1.신고하기";
-//		} else if (member.getRole() == 0) {
-//			str += "2.내역보기";
-//		}
-//		str += "9.뒤로가기";
-//		System.out.println(str);
-//	}
+	protected void menuDeletePrint() {
+		System.out.println("--------------------------------------------------");
+		System.out.println("1.삭제 9.뒤로가기");
+		System.out.println("--------------------------------------------------");
+	}
 
 	protected void exit() {
 		System.out.println("프로그램을 종료합니다.");
@@ -83,5 +145,10 @@ public class ReportBoardManagement extends Management {
 
 	protected void showInputError() {
 		System.out.println("메뉴에서 입력해주시기 바랍니다.");
+	}
+
+	public void clear() {
+		for (int i = 0; i < 57; ++i)
+			System.out.println();
 	}
 }

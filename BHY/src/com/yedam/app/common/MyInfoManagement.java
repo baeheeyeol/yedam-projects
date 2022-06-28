@@ -15,11 +15,13 @@ public class MyInfoManagement extends Management {
 	NoticeBoardDAO ntDAO = NoticeBoardDAO.getInstance();
 
 	public MyInfoManagement(Member member) throws InterruptedException {
+
 		while (true) {
 			clear();
 			menuPrint(member);
 			int menuNo = menuSelect();
 			if (menuNo == 1) {
+
 				// 정보
 				info(member);
 			} else if (menuNo == 2) {
@@ -37,27 +39,35 @@ public class MyInfoManagement extends Management {
 		}
 	}
 
-	protected void report(Member member) {
+	protected void report(Member member) throws InterruptedException {
 		new ReportBoardManagement().ReportBoardManagementRun(member);
-		
+
 	}
 
-	protected void info(Member member) {
-		clear();
-		System.out.println("==================");
-		System.out.println("ID : " + member.getMemberId());
-		System.out.println("PASSWORD : " + member.getMemberPwd());
-		if (member.getRole() == 0) {
-			List<NoticeBoard> ntlist = ntDAO.selelctAll();
-			List<Board> list = bDAO.selectAll1();
-			System.out.println("공지 게시글 수 : " + ntlist.size());
-			System.out.println("게시글 수 : " + list.size());
-
-		} else {
-			List<Board> list = bDAO.selectAll(member.getMemberId());
-			System.out.println("게시글 수 : " + list.size());
+	protected void info(Member member) throws InterruptedException {
+		while (true) {
+			clear();
+			System.out.println("==================================================");
+			System.out.println("ID : " + member.getMemberId());
+			System.out.println("PASSWORD : " + member.getMemberPwd());
+			if (member.getRole() == 0) {
+				List<NoticeBoard> ntlist = ntDAO.selelctAll();
+				List<Board> list = bDAO.selectAll1();
+				System.out.println("공지 게시글 수 : " + ntlist.size());
+				System.out.println("게시글 수 : " + list.size());
+			} else {
+				List<Board> list = bDAO.selectAll(member.getMemberId());
+				System.out.println("게시글 수 : " + list.size());
+			}
+			System.out.println("==================================================");
+			System.out.println("--------------------------------------------------");
+			System.out.println("9. 뒤로가기");
+			System.out.println("--------------------------------------------------");
+			int num = menuSelect();
+			if (num == 9) {
+				break;
+			}
 		}
-		System.out.println("==================");
 
 	}
 
@@ -69,7 +79,7 @@ public class MyInfoManagement extends Management {
 				boardChoiceType(member);
 				return;
 			} else {
-				selectBoard(member);
+				selectMyBoard(member);
 				return;
 			}
 		}
@@ -81,13 +91,15 @@ public class MyInfoManagement extends Management {
 			str += " 3.신고내역";
 		}
 		str += " 9.뒤로가기";
+		System.out.println("--------------------------------------------------");
 		System.out.println(str);
-		System.out.printf("번호>");
-	}
+		System.out.println("--------------------------------------------------");
+}
 
 	protected int menuSelect() throws InterruptedException {
 		int menu = 0;
 		try {
+			System.out.print("번호>");
 			menu = Integer.parseInt(sc.nextLine());
 		} catch (NumberFormatException e) {
 			System.out.println("숫자를 입력해주시기 바랍니다.");
@@ -104,8 +116,9 @@ public class MyInfoManagement extends Management {
 		System.out.println("메뉴에서 입력해주시기 바랍니다.");
 		Thread.sleep(1000);
 	}
+
 	public void clear() {
-		for (int i = 0; i < 50; ++i)
+		for (int i = 0; i < 57; ++i)
 			System.out.println();
 	}
 }

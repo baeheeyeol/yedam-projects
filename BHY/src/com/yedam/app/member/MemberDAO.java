@@ -127,6 +127,19 @@ public class MemberDAO extends DAO {
 		}
 	}
 
+	public void delete() {
+		try {
+			connect();
+			String sql = "DELETE FROM MEMBERS WHERE MEMBER_ID LIKE('GUST%S')";
+					stmt =conn.createStatement();
+					rs=stmt.executeQuery(sql);
+					
+		} catch (SQLException e) {
+		} finally {
+			disconnect();
+		}
+	}
+
 	public Member selectOne(Member member) throws InterruptedException {
 
 		Member loginInfo = null;

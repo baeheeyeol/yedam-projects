@@ -34,10 +34,10 @@ public class NoticeCommentManagement extends NoticeManagement {
 				insertComent(member, noticeboard);
 			} else if (menuNo == 2) {
 				// 수정
-				updateComent(member,noticeboard);
+				updateComent(member, noticeboard);
 			} else if (menuNo == 3) {
 				// 삭제
-				deleteComent(member,noticeboard);
+				deleteComent(member, noticeboard);
 			} else if (menuNo == 9) {
 				exit();
 				break;
@@ -48,7 +48,7 @@ public class NoticeCommentManagement extends NoticeManagement {
 		}
 	}
 
-	void deleteComent(Member member,NoticeBoard noticeboard) throws InterruptedException {
+	void deleteComent(Member member, NoticeBoard noticeboard) throws InterruptedException {
 		clear();
 		readComment(noticeboard);
 		int commentNum = selectComment();
@@ -73,7 +73,7 @@ public class NoticeCommentManagement extends NoticeManagement {
 		return false;
 	}
 
-	protected void updateComent(Member member,NoticeBoard noticeboard) throws InterruptedException {
+	protected void updateComent(Member member, NoticeBoard noticeboard) throws InterruptedException {
 		clear();
 		readComment(noticeboard);
 		int commentNum = selectComment();
@@ -88,8 +88,9 @@ public class NoticeCommentManagement extends NoticeManagement {
 	protected void insertComent(Member member, NoticeBoard noticeBoard) throws InterruptedException {
 		clear();
 		Read(noticeBoard);
-
+		System.out.println("--------------------------------------------------");
 		System.out.println("1.댓글 작성 2.대댓글 작성");
+		System.out.println("--------------------------------------------------");
 		System.out.print("번호>");
 		int num = menuSelect();
 		if (num == 1) {
@@ -131,7 +132,9 @@ public class NoticeCommentManagement extends NoticeManagement {
 				return true;
 			}
 		}
-		System.out.println("본인의 댓글을 선택해주세요.");
+		System.err.println("--------------------------------------------------");
+		System.err.println("본인의 댓글을 선택해주세요.");
+		System.err.println("--------------------------------------------------");
 		Thread.sleep(1000);
 		return false;
 	}
@@ -144,7 +147,9 @@ public class NoticeCommentManagement extends NoticeManagement {
 				return true;
 			}
 		}
-		System.out.println("선택한 번호의 댓글이 존재하지 않습니다.");
+		System.err.println("--------------------------------------------------");
+		System.err.println("선택한 번호의 댓글이 존재하지 않습니다.");
+		System.err.println("--------------------------------------------------");
 		Thread.sleep(1000);
 		return false;
 	}
@@ -159,7 +164,9 @@ public class NoticeCommentManagement extends NoticeManagement {
 	}
 
 	protected void menuPrint() {
+		System.out.println("--------------------------------------------------");
 		System.out.println("1.댓글작성 2.댓글수정 3.댓글삭제 9.뒤로가기");
+		System.out.println("--------------------------------------------------");
 		System.out.print("번호>");
 	}
 
@@ -184,7 +191,7 @@ public class NoticeCommentManagement extends NoticeManagement {
 	}
 
 	public void clear() {
-		for (int i = 0; i < 45; ++i)
+		for (int i = 0; i < 57; ++i)
 			System.out.println();
 	}
 }

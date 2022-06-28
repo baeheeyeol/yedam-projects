@@ -7,7 +7,6 @@ import com.yedam.app.board.Board;
 import com.yedam.app.board.BoardDAO;
 import com.yedam.app.board.Comment;
 import com.yedam.app.board.CommentDAO;
-import com.yedam.app.board.NoticeBoard;
 import com.yedam.app.member.Member;
 
 public class CommentManagement extends BoardManagement {
@@ -86,7 +85,9 @@ public class CommentManagement extends BoardManagement {
 	protected void insertComent(Member member, Board board) throws InterruptedException {
 		clear();
 		Read(board);
+		System.out.println("--------------------------------------------------");
 		System.out.println("1.댓글 2.대댓글");
+		System.out.println("--------------------------------------------------");
 		System.out.print("번호>");
 		int num = menuSelect();
 		if (num == 1) {
@@ -124,7 +125,11 @@ public class CommentManagement extends BoardManagement {
 	boolean checkMemberId(Member member) throws InterruptedException {
 		List<Comment> list = cDAO.selectAll();
 		for (Comment comment : list) {
-			if (comment.getMemberId().equals(member)) {
+			System.out.println("1");
+			System.out.println( comment.getMemberId());
+			System.out.println("2");
+			System.out.println(member.getMemberId());
+			if (comment.getMemberId().equals(member.getMemberId())) {
 				return true;
 			}
 		}
@@ -156,7 +161,7 @@ public class CommentManagement extends BoardManagement {
 	}
 
 	protected void menuPrint() {
-		System.out.println("1.댓글작성 2.댓글수정 3.댓글삭제 9.뒤로가기");
+		System.out.println("1.댓글작성\t2.댓글수정\t3.댓글삭제\t9.뒤로가기");
 		System.out.print("번호>");
 	}
 
@@ -165,7 +170,9 @@ public class CommentManagement extends BoardManagement {
 		try {
 			menu = Integer.parseInt(sc.nextLine());
 		} catch (NumberFormatException e) {
-			System.out.println("숫자를 입력해주시기 바랍니다.");
+			System.err.println("--------------------------------------------------");
+			System.err.println("숫자를 입력해주시기 바랍니다.");
+			System.err.println("--------------------------------------------------");
 			Thread.sleep(1000);
 		}
 		return menu;
@@ -177,12 +184,14 @@ public class CommentManagement extends BoardManagement {
 	}
 
 	protected void showInputError() throws InterruptedException {
-		System.out.println("메뉴에서 입력해주시기 바랍니다.");
+		System.err.println("--------------------------------------------------");
+		System.err.println("메뉴에서 입력해주시기 바랍니다.");
+		System.err.println("--------------------------------------------------");
 		Thread.sleep(1000);
 	}
 
 	public void clear() {
-		for (int i = 0; i < 45; ++i)
+		for (int i = 0; i < 57; ++i)
 			System.out.println();
 	}
 }

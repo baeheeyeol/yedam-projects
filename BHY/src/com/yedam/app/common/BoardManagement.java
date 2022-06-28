@@ -6,8 +6,6 @@ import com.yedam.app.board.Board;
 import com.yedam.app.board.BoardDAO;
 import com.yedam.app.board.Comment;
 import com.yedam.app.board.CommentDAO;
-import com.yedam.app.board.NoticeBoard;
-import com.yedam.app.board.NoticeComment;
 import com.yedam.app.member.Member;
 
 public class BoardManagement {
@@ -20,7 +18,7 @@ public class BoardManagement {
 	};
 
 	public void BoardManagementRun(Board board, Member member) throws InterruptedException {
-		
+
 		while (true) {
 			clear();
 			selectedBoard(board);
@@ -28,14 +26,17 @@ public class BoardManagement {
 			int menuNo = menuSelect();
 			if (menuNo == 1) {
 				// 읽기
-				Read(board,member);
+				read(board, member);
 			} else if (menuNo == 2 && (member.getMemberId().equals(board.getMemberId()) || member.getRole() == 0)) {
 				// 수정
-				Update(board, member);
+				update(board, member);
 			} else if (menuNo == 3 && (member.getMemberId().equals(board.getMemberId()) || member.getRole() == 0)) {
 				// 삭제
-				Delete(board);
+				delete(board);
 				break;
+			} else if (menuNo == 4) {
+				// 신고
+				report(board, member);
 			} else if (menuNo == 9) {
 				// 뒤로가기
 				exit();
@@ -46,19 +47,23 @@ public class BoardManagement {
 		}
 	}
 
-	private void selectedBoard(Board board) {
-		System.out.println("========================");
-		System.out.print("선택한 게시판 : ");
-		System.out.println(board.getBoardNum() + ". " + board.getBoardTitle());
-		System.out.println("====================");
+	private void report(Board board, Member member) {
+		new ReportBoardManagement().insertReport(member, board);
 	}
 
-	private void Delete(Board board) throws InterruptedException {
+	private void selectedBoard(Board board) {
+		System.out.println("==================================================");
+		System.out.print("선택한 게시판 : ");
+		System.out.println("NO." + board.getBoardNum() + "\t" + board.getBoardTitle());
+		System.out.println("==================================================");
+	}
+
+	private void delete(Board board) throws InterruptedException {
 		while (true) {
 			Board list = bDAO.selectOne(board.getBoardNum());
 			System.out.println("--" + list.getBoardNum() + ". " + list.getBoardTitle() + "--");
 			System.out.println("해당 게시글을 삭제하시겠습니까");
-			System.out.println("1.삭제 2.뒤로가기");
+			System.out.println("1.삭제 \t2.뒤로가기");
 			int menuNo = menuSelect();
 			if (menuNo == 1) {
 				bDAO.delete(board.getBoardNum());
@@ -69,19 +74,19 @@ public class BoardManagement {
 		}
 	}
 
-	private void Update(Board board, Member member) throws InterruptedException {
+	private void update(Board board, Member member) throws InterruptedException {
 		while (true) {
 			menuPrint();
 			int menuNo = menuSelect();
 			if (menuNo == 1) {
 				// 제목 수정
 				bDAO.updateTitle(title(), board);
-				Read(board,member);
+				read(board, member);
 				return;
 			} else if (menuNo == 2) {
 				// 내용 수정
 				bDAO.updateContent(content(), board);
-				Read(board,member);
+				read(board, member);
 				return;
 			} else if (menuNo == 9) {
 				exit();
@@ -93,7 +98,7 @@ public class BoardManagement {
 	}
 
 	// 읽기
-	protected void Read(Board board, Member member) throws InterruptedException {
+	protected void read(Board board, Member member) throws InterruptedException {
 		clear();
 		readBoard(board);
 		readComment(board);
@@ -108,39 +113,40 @@ public class BoardManagement {
 
 	protected void readBoard(Board board) {
 		Board Board = bDAO.selectOneAll(board.getBoardNum());
-		System.out.println("=========================");
-		System.out.println(Board.getBoardNum() + ". " + Board.getBoardTitle());
-		System.out.println("=========================");
+		System.out.println("==================================================");
+		System.out.println("No." + Board.getBoardNum() + " " + Board.getBoardTitle());
+		System.out.println("==================================================");
 		System.out.println(Board.getBoardContent());
-		System.out.println("=========================");
+		System.out.println("==================================================");
 		System.out.println("작성자 : " + Board.getMemberId());
-		System.out.println("=========================");
+		System.out.println("==================================================");
 	};
 
 	protected void readComment(Board board) {
 		List<Comment> list = cDAO.selectAll(board.getBoardNum());
 		System.out.println("댓글");
-		System.out.println("=========================");
 		for (Comment Comment : list) {
 			if (Comment.getCommentInvisible() == 1) {
-				System.out.println("삭제된 댓글입니다.");
+				System.out.println("no" + Comment.getCommentNum() + " |" + " 삭제된 댓글입니다.");
+
 			} else {
-				System.out.println(Comment.getCommentNum() + "." + Comment.getCommentContent() + " /id : "
+				System.out.println("no" + Comment.getCommentNum() + " | " + Comment.getCommentContent() + " /id : "
 						+ Comment.getMemberId());
 			}
 		}
-		System.out.println("=========================");
+		System.out.println("==================================================");
 	}
-	
-	
+
 	protected void menuPrint(Board board, Member member) {
 		String sql = "1.읽기";
 		Board temp = bDAO.selectOne(board.getBoardNum());
 		if (temp.getMemberId().equals(member.getMemberId()) || member.getRole() == 0) {
 			sql += " 2.수정 3.삭제";
 		}
-		sql += " 9.뒤로가기";
+		sql += " 4.신고하기 9.뒤로가기";
+		System.out.println("--------------------------------------------------");
 		System.out.println(sql);
+		System.out.println("--------------------------------------------------");
 		System.out.print("번호>");
 	};
 
@@ -155,7 +161,9 @@ public class BoardManagement {
 	}
 
 	protected void menuPrint() {
+		System.out.println("--------------------------------------------------");
 		System.out.printf("1.제목 수정 2.내용 수정 9. 뒤로가기");
+		System.out.println("--------------------------------------------------");
 	}
 
 	protected int menuSelect() throws InterruptedException {
@@ -180,7 +188,7 @@ public class BoardManagement {
 	}
 
 	public void clear() {
-		for (int i = 0; i < 50; ++i)
+		for (int i = 0; i < 57; ++i)
 			System.out.println();
 	}
 }

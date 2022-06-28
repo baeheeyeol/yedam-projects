@@ -20,6 +20,34 @@ public class ReportBoardDAO extends DAO {
 		return dao;
 	}
 
+	public void delete(int boardNum,int reportBoardNum) {
+
+		try {
+			connect();
+			String sql1 = "DELETE FROM BOARD_CONTENT WHERE BOARD_NUM =?";
+			pstmt = conn.prepareStatement(sql1);
+			pstmt.setInt(1, boardNum);
+			pstmt.executeUpdate();
+			String sql = "DELETE FROM BOARD WHERE BOARD_NUM = ?";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, boardNum);
+			pstmt.executeUpdate();
+			String sql2 ="DELETE FROM REPORT_BOARD WHERE REPORT_BOARD_NUM =?";
+			pstmt=conn.prepareStatement(sql2);
+			pstmt.setInt(1, reportBoardNum);
+			int result =pstmt.executeUpdate();
+			if (result > 0) {
+				System.out.println("삭제되었습니다.");
+			} else {
+				System.out.println("삭제되지 않았습니다.");
+			}
+		} catch (SQLException e) {
+
+		} finally {
+			disconnect();
+		}
+	}
+	
 	// 입력
 	public void insert(Member member, Board board, String content) {
 		try {
@@ -48,7 +76,7 @@ public class ReportBoardDAO extends DAO {
 		ReportBoard reportBoard = null;
 		try {
 			connect();
-			String sql = "SELECT *FROM REPORT_BOARD WHERE REPORT_BOARD_NUM = " + reportBoardNum;
+			String sql = "SELECT *FROM REPORT_BOARD JOIN BOARD_CONTENT USING(BOARD_NUM) WHERE REPORT_BOARD_NUM = " + reportBoardNum;
 			stmt = conn.createStatement();
 			rs = stmt.executeQuery(sql);
 			while (rs.next()) {
@@ -58,6 +86,7 @@ public class ReportBoardDAO extends DAO {
 				reportBoard.setMemberId(rs.getString("member_id"));
 				reportBoard.setReportBoardNum(rs.getInt("report_board_num"));
 				reportBoard.setBoardTitle(rs.getString("board_title"));
+				reportBoard.setBoardContent(rs.getString("board_content"));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -65,7 +94,6 @@ public class ReportBoardDAO extends DAO {
 			disconnect();
 		}
 		return reportBoard;
-
 	}
 
 	// 전체조회
