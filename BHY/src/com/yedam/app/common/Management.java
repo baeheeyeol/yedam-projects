@@ -1,5 +1,6 @@
 package com.yedam.app.common;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import com.yedam.app.board.Board;
@@ -12,17 +13,18 @@ public class Management {
 	Scanner sc = new Scanner(System.in);
 	BoardDAO bDAO = BoardDAO.getInstance();
 	NoticeBoardDAO ntDAO = NoticeBoardDAO.getInstance();
-
-	boolean back = false;
+	int currentPage = 1;
+	boolean back;
 
 	public Management() {
 	}
 
 	public void ManagementRun(Member member) throws InterruptedException {
+
 		while (true) {
 			clear();
+			System.out.println("접속자 : " + member.getMemberId());
 			readNotice();
-			back = false;
 			// readBoard(member);
 			readBoardMain(member);
 			menuPrint(member);
@@ -77,8 +79,11 @@ public class Management {
 	protected void selectMyBoard(Member member) throws InterruptedException {
 		while (true) {
 			readBoardMy(member);
+			if (back == true) {
+				return;
+			}
 			System.out.println("=======================================================");
-			System.out.printf("선택할 게시판번호 입력>");
+			System.out.println("선택할 게시판 ");
 			int boardNum = menuSelect();
 			if (existBoard(boardNum)) {
 				Board board = bDAO.selectOne(boardNum);
@@ -116,22 +121,23 @@ public class Management {
 		} else if (boardType == 2) {
 			clear();
 			readBoard(member);
-			if (back = true) {
+			if (this.back == true) {
+				return;
+			} else if (this.back == false) {
+				System.out.printf("선택할 게시판번호 입력>");
+				int boardNum = menuSelect();
+				if (existBoard(boardNum)) {
+					Board board = bDAO.selectOne(boardNum);
+					new BoardManagement().BoardManagementRun(board, member);
+					return;
+				} else {
+					System.err.println("========================");
+					System.err.println("입력한 번호의 게시판이 없습니다.");
+					System.err.println("========================");
+					Thread.sleep(1000);
+				}
 				return;
 			}
-			System.out.printf("선택할 게시판번호 입력>");
-			int boardNum = menuSelect();
-			if (existBoard(boardNum)) {
-				Board board = bDAO.selectOne(boardNum);
-				new BoardManagement().BoardManagementRun(board, member);
-				return;
-			} else {
-				System.err.println("========================");
-				System.err.println("입력한 번호의 게시판이 없습니다.");
-				System.err.println("========================");
-				Thread.sleep(1000);
-			}
-			return;
 		} else {
 			System.out.println("다시 입력하세요.");
 			Thread.sleep(1000);
@@ -176,13 +182,51 @@ public class Management {
 		System.out.println("=*=*=*=*=*=*=*=*=*=*=*==*=*=*=*=*=*=*=*=*=*=*==*=*");
 	}
 
+	protected void readBoard(Member member, int currentPage) {
+		List<Board> list = bDAO.selelctAll();
+		int number = 10; // 페이지당 총 글 개수
+		int totalNumber = list.size(); // 총 글 개수
+		int totalPage = totalNumber / number + (totalNumber % number == 0 ? 0 : 1);// 총 페이지수
+		int firstNumber = (currentPage - 1) * number; // 시작번호
+		int lastNumber = firstNumber + number; // 마지막 번호
+		if (currentPage == totalPage) {
+			lastNumber = firstNumber + (totalNumber % number);
+		}
+		System.out.println("********************** 게시판 **********************");
+		for (int i = firstNumber; i < lastNumber; i++) {
+			if (member.getRole() == 0) {
+				String str = "No." + list.get(i).getBoardNum() + ".\t" + list.get(i).getBoardTitle() + "\t\t작성자 : "
+						+ list.get(i).getMemberId();
+				if (list.get(i).getBoardInvisible() == 1) {
+					str += "/ 익명여부 : o";
+				} else {
+					str += " /익명여부 : x";
+				}
+				System.out.println(str);
+			} else if (list.get(i).getBoardInvisible() == 1
+					&& !member.getMemberId().equals(list.get(i).getMemberId())) {
+				System.out.println("No." + list.get(i).getBoardNum() + ".\t" + list.get(i).getBoardTitle()
+						+ "\t\t작성자 : " + "****");
+			} else {
+				System.out.println("No." + list.get(i).getBoardNum() + ".\t" + list.get(i).getBoardTitle()
+						+ "\t\t작성자 : " + list.get(i).getMemberId());
+			}
+		}
+		System.out.println("현재 페이지:" + currentPage);
+		System.out.println("************************************************");
+	}
+
 	protected void readBoardMain(Member member) throws InterruptedException {
 		List<Board> list = bDAO.selelctAll();
 		int number = 10; // 페이지당 총 글 개수
 		int totalNumber = list.size(); // 총 글 개수
 		int currentPage = 1; // 현재 페이지
+		int totalPage = totalNumber / number + (totalNumber % number == 0 ? 0 : 1);// 총 페이지수
 		int firstNumber = (currentPage - 1) * number; // 시작번호
 		int lastNumber = firstNumber + number; // 마지막 번호
+		if (currentPage == totalPage) {
+			lastNumber = firstNumber + (totalNumber % number);
+		}
 		System.out.println("********************** 게시판 **********************");
 		for (int i = firstNumber; i < lastNumber; i++) {
 			if (member.getRole() == 0) {
@@ -215,14 +259,28 @@ public class Management {
 		int firstNumber = (currentPage - 1) * number; // 시작번호
 		int totalPage = totalNumber / number + (totalNumber % number == 0 ? 0 : 1);// 총 페이지수
 		int lastNumber = firstNumber + number; // 마지막 번호
+		int rangePage = 5; // 표시될 페이지 범위
+		int firstPage = 1; // 첫 번째 페이지
+		int lastPage; // 마지막 페이지 개수
+		List<Integer> page = new ArrayList<Integer>();
+		for (int i = 1; i < totalPage; i++) {
+			page.add(i);
+		}
+
 		while (true) {
+			String pageNum = "";
 			clear();
 			readNotice();
 			firstNumber = (currentPage - 1) * number;
 			lastNumber = firstNumber + number;
+			lastPage = firstPage + rangePage - 1;
 			if (currentPage == totalPage) {
 				lastNumber = firstNumber + (totalNumber % number);
 			}
+			if (lastPage > totalPage) {
+				lastPage = totalPage;
+			}
+
 			System.out.println("********************** 게시판 **********************");
 			for (int i = firstNumber; i < lastNumber; i++) {
 				if (member.getRole() == 0) {
@@ -243,31 +301,63 @@ public class Management {
 							+ "\t\t작성자 : " + list.get(i).getMemberId());
 				}
 			}
-			System.out.println("현재 페이지:" + currentPage);
+			System.out.println("************************************************");
+
+			if (firstPage > 1) {
+				pageNum += "<< ";
+			}
+			for (int i = firstPage; i <= lastPage; i++) {
+				if (currentPage == i) {
+					pageNum += "[" + i + "] ";
+				} else if (currentPage != i) {
+					pageNum += i + " ";
+				}
+			}
+			if (firstPage + rangePage <= totalPage) {
+				pageNum += ">>";
+			}
+			System.out.println(pageNum);
 			System.out.println("************************************************");
 			if (currentPage == 1 && totalPage > 1) {
-				System.out.println("2.다음 3.선택 9.뒤로가기");
+				System.out.println("2.다음 3.게시글 선택 4.페이지 선택 9.뒤로가기");
 			} else if (1 < currentPage && currentPage < totalPage && totalPage > 1) {
-				System.out.println("1.이전 2.다음 3.선택 9.뒤로가기");
+				System.out.println("1.이전 2.다음 3.게시글 선택 4.페이지 선택 9.뒤로가기");
 			} else if (currentPage == totalPage && totalPage != 1) {
-				System.out.println("1.이전 3.선택 9.뒤로가기");
+				System.out.println("1.이전 3.게시글 선택 4.페이지 선택9.뒤로가기");
 			} else if (totalPage == 1) {
 				System.out.println("3.선택 9.뒤로가기");
 			}
-
+			System.out.print("번호>");
 			try {
 				int num = Integer.parseInt(sc.nextLine());
 				if (num == 1 && (1 < currentPage && currentPage < totalPage
 						|| (currentPage == totalPage && totalPage > 1))) {
 					currentPage--;
+					if (currentPage < firstPage) {
+						firstPage -= rangePage;
+					}
 				} else if (num == 2
 						&& (1 < currentPage && currentPage < totalPage || (currentPage == 1 && totalPage > 1))) {
 					currentPage++;
+					if (currentPage > lastPage) {
+						firstPage = lastPage + 1;
+					}
 				} else if (num == 3) {
 					break;
+				} else if (num == 4) {
+					while (true) {
+						System.out.print("페이지 번호>");
+						currentPage = menuSelect();
+						if (currentPage < firstPage || currentPage > lastPage) {
+							System.err.println("다시 선택하세요");
+							Thread.sleep(1000);
+						} else {
+							break;
+						}
+					}
 				} else if (num == 9) {
-					back = true;
-					return;
+					this.back = true;
+					break;
 				} else {
 					System.err.println("메뉴에서 입력해주시기 바랍니다.");
 					Thread.sleep(1000);
@@ -333,6 +423,7 @@ public class Management {
 				Thread.sleep(1000);
 			}
 		}
+
 	}
 
 	protected void boardWrtie(Member member) throws InterruptedException {

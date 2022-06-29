@@ -178,7 +178,7 @@ public class CommentDAO extends DAO {
 		try {
 
 			connect();
-			String sql = "SELECT comment_num, lpad(' ',(level),'=')||comment_content AS content,member_id,COMMENT_INVISIBLE FROM BOARD_COMMENT "
+			String sql = "SELECT comment_num, lpad(' ',2*(level-1),'   ')||rpad(' ',1,'ㄴ')||comment_content AS content,member_id,COMMENT_INVISIBLE FROM BOARD_COMMENT "
 					+ "WHERE BOARD_NUM = " + boardNum + " START WITH comment_num_parent is null"
 					+ " CONNECT BY prior COMMENT_NUM=comment_num_PARENT";
 			stmt = conn.createStatement();
@@ -186,7 +186,7 @@ public class CommentDAO extends DAO {
 			while (rs.next()) {
 				Comment comment = new Comment();
 				comment.setCommentNum(rs.getInt("comment_num"));
-				comment.setCommentContent(rs.getString("content"));
+				comment.setCommentContent((rs.getString("content")).substring(1));
 				comment.setMemberId(rs.getString("member_id"));
 				comment.setCommentInvisible(rs.getInt("comment_invisible"));
 				list.add(comment);

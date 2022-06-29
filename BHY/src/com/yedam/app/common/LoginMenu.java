@@ -68,8 +68,6 @@ public class LoginMenu {
 	}
 
 	void loginNonMember() throws InterruptedException {
-		
-		
 		Member mb = new Member();
 		int num = (int) (Math.random() * 1001);
 		String nonMemberId = "guest" + num;
@@ -78,9 +76,11 @@ public class LoginMenu {
 		mb.setMemberPwd(nonMemberPwd);
 		mb.setRole(3);
 		mDAO.insert(mb);
+		mDAO.delete();
 		new Management().ManagementRun(mb);
 		this.nonMember = true;
 		this.nonMemberId = mb.getMemberId();
+		
 	}
 
 	void deleteNonMember() {

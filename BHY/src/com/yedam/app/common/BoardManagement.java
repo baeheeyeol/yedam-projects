@@ -52,14 +52,16 @@ public class BoardManagement {
 	}
 
 	private void selectedBoard(Board board) {
+		Board board1=bDAO.selectOne(board.getBoardNum());
 		System.out.println("==================================================");
 		System.out.print("선택한 게시판 : ");
-		System.out.println("NO." + board.getBoardNum() + "\t" + board.getBoardTitle());
+		System.out.println("NO." + board1.getBoardNum() + "\t" + board1.getBoardTitle());
 		System.out.println("==================================================");
 	}
 
 	private void delete(Board board) throws InterruptedException {
 		while (true) {
+			clear();
 			Board list = bDAO.selectOne(board.getBoardNum());
 			System.out.println("--" + list.getBoardNum() + ". " + list.getBoardTitle() + "--");
 			System.out.println("해당 게시글을 삭제하시겠습니까");
@@ -76,17 +78,18 @@ public class BoardManagement {
 
 	private void update(Board board, Member member) throws InterruptedException {
 		while (true) {
+			clear();
 			menuPrint();
 			int menuNo = menuSelect();
 			if (menuNo == 1) {
 				// 제목 수정
 				bDAO.updateTitle(title(), board);
-				read(board, member);
+				//read(board, member);
 				return;
 			} else if (menuNo == 2) {
 				// 내용 수정
 				bDAO.updateContent(content(), board);
-				read(board, member);
+				//read(board, member);
 				return;
 			} else if (menuNo == 9) {
 				exit();
@@ -162,7 +165,7 @@ public class BoardManagement {
 
 	protected void menuPrint() {
 		System.out.println("--------------------------------------------------");
-		System.out.printf("1.제목 수정 2.내용 수정 9. 뒤로가기");
+		System.out.println("1.제목 수정 2.내용 수정 9. 뒤로가기");
 		System.out.println("--------------------------------------------------");
 	}
 

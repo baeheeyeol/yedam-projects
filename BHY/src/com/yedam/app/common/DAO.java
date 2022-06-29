@@ -24,15 +24,15 @@ public class DAO {
 	protected ResultSet rs;
 
 	public DAO() {
-		dbConfig();
+		// dbConfig();
 	}
 
 	public void connect() {
 		try {
-			Class.forName(jdbc_driver);
-		conn = DriverManager.getConnection(oracle_url, connectedId, connectedPwd);
-//		conn = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe", "hr","hr");
-//			conn = DriverManager.getConnection(oracle_url, "hr","hr");
+			Class.forName("oracle.jdbc.driver.OracleDriver");
+//		conn = DriverManager.getConnection(oracle_url, connectedId, connectedPwd);
+			conn = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe", "bhy", "bhy");
+//			conn = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe", "hr","hr");
 		} catch (ClassNotFoundException e) {
 			System.out.println("jdbc driver 로딩 실패");
 		} catch (SQLException e) {
@@ -46,11 +46,11 @@ public class DAO {
 		try {
 			String filePath = ClassLoader.getSystemClassLoader().getResource(resource).getPath();
 			properties.load(new FileInputStream(filePath));
-			
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		properties.setProperty(resource, resource);
 		jdbc_driver = properties.getProperty("driver");
 		oracle_url = properties.getProperty("url");

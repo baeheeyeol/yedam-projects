@@ -71,14 +71,23 @@ public class MyInfoManagement extends Management {
 	}
 
 	protected void myBoard(Member member) throws InterruptedException {
+		clear();
 		while (true) {
 			if (member.getRole() == 0) {
 				readNotice();
 				readBoard(member);
+			
+				if (back == true) {
+					return;
+				}
 				boardChoiceType(member);
 				return;
 			} else {
 				selectMyBoard(member);
+				System.out.println(back);
+				if (back == true) {
+					return;
+				}
 				return;
 			}
 		}
@@ -93,7 +102,7 @@ public class MyInfoManagement extends Management {
 		System.out.println("--------------------------------------------------");
 		System.out.println(str);
 		System.out.println("--------------------------------------------------");
-}
+	}
 
 	protected int menuSelect() throws InterruptedException {
 		int menu = 0;

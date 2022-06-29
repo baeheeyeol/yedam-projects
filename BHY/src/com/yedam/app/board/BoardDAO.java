@@ -26,9 +26,12 @@ public class BoardDAO extends DAO {
 			connect();
 			String sql = "INSERT INTO BOARD (board_num,board_title,member_id) VALUES(board_seq.nextval,?,?)";
 			pstmt = conn.prepareStatement(sql);
-			pstmt.setString(1, board.getBoardTitle());
+			if (board.getBoardTitle().isBlank()) {
+				pstmt.setString(1, "제목이 없습니다.");
+			} else {
+				pstmt.setString(1, board.getBoardTitle());
+			}
 			pstmt.setString(2, board.getMemberId());
-
 			int result = pstmt.executeUpdate();
 			if (result > 0) {
 				System.out.println("등록되었습니다.");
@@ -67,7 +70,11 @@ public class BoardDAO extends DAO {
 			String sql = "INSERT INTO BOARD_CONTENT VALUES(?,?,?)";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, board.getBoardNum());
-			pstmt.setString(2, board.getBoardContent());
+			if (board.getBoardContent().isBlank()) {
+				pstmt.setString(2, "내용이 없습니다.");
+			} else {
+				pstmt.setString(2, board.getBoardContent());
+			}
 			pstmt.setInt(3, board.getBoardInvisible());
 
 			int result = pstmt.executeUpdate();
@@ -214,7 +221,6 @@ public class BoardDAO extends DAO {
 		return list;
 	}
 
-
 	// 게시판 번호로 하나선택
 	public Board selectOne(int boardNum) {
 		Board board = new Board();
@@ -286,6 +292,7 @@ public class BoardDAO extends DAO {
 				Board Board = new Board();
 				Board.setBoardNum(rs.getInt("board_num"));
 				Board.setBoardTitle(rs.getString("board_title"));
+				Board.setMemberId(rs.getString("member_id"));
 				list.add(Board);
 			}
 		} catch (SQLException e) {
@@ -295,6 +302,7 @@ public class BoardDAO extends DAO {
 		}
 		return list;
 	}
+
 	public List<Board> selectAll1() {
 		List<Board> list = new ArrayList<>();
 		try {
